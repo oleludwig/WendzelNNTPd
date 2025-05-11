@@ -77,7 +77,7 @@ check()
 	else
 		echo "$2 (returned $RET_VAL, what is not eq to $CHK_VAL)"
 		echo $3
-		exit
+		exit 1
 	fi
 }
 

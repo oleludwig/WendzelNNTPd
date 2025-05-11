@@ -19,7 +19,8 @@ CFLAGS+=$(ADD_CFLAGS)
 BUILD=-DBUILD=\"`cat build`\"
 GDBON=-ggdb -g #-lefence
 
-DEBUG=$(GDBON) -DDEBUG -DXXDEBUG
+# soll vermutlich standardmaessig aus, nur fuer debug
+#DEBUG=$(GDBON) -DDEBUG -DXXDEBUG
 
 BUILDFLAGS=-O2 $(STACK_PROT) $(ADD_LNKFLAGS)
 
