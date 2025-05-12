@@ -1,0 +1,2 @@
+bin_PROGRAMS = hello
+hello_SOURCES = main.c acl.c cdpnntpadm.c cdpstrings.c charstack.c database.c db_abstractions.c db_mysql.c db_postgres.c db_sqlite3.c globals.c hash.c libfunc.c libssl.c log.c server.c main.h wendzelnntpdpath.h cdpstrings.h

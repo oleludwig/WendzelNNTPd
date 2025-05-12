@@ -1,0 +1,43 @@
+To-do List
+==========
+
+WendzelNNTPd is still somehow unfinished. First of all, it lacks
+several NNTP commands specified in the RFCs. Secondly, some highly
+desirable features are missing, such as a support for encrypted
+and integrity-checked connections.
+
+Major:
+- store unique message ID and message body in the DB (this is available
+  only for the experimental postgres setup). 
+- enable sync w/ other NNTP servers
+- *Hack*:
+  a) A gaming bot that constantly reads and replies to NNTP posts in a
+     certain newsgroup:
+  Add NNTP text adventure gaming engine with simple sample game so that
+  ppl can write text adventures that they can play over the network and
+  with their Usenet clients; savegames should be postings and each game
+  should be some newsgroup. Also this would allow coop txt gaming (i.e.
+  multiplayer online txt adv. gaming) :-)))
+
+Minor:
+- harden all SQL-related code w.r.t. SQL injections
+- Finalize experimental postgres support.
+	- Excessive testing of all functionality and debugging.
+	- SQL hardening.
+	- Update documentation: how to setup PostgreSQL for NNTPd?
+- replace hash(salt,username,password) w/ hash(salt,rand(),password).
+- unicode support (-> domains with special characters, e.g. ä,ö,ü in "From:")
+- documentation: How to delete old postings?
+- AUTHINFO SIMPLE
+- LAST, NEXT
+- NEWGROUPS
+- in general: implement more NNTP commands
+- add postgres support
+- add ldap support
+- add PAM support
+- make use of strdup() ...
+- add a real GNU configure script ;-)
+- switch to different user+group id after startup
+- remove support for Windows fully from codebase
+- check whether this code can be compiled on an old i486 architecture and
+  on outdated OS releases, such as SuSE 7 or so.

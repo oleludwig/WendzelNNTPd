@@ -83,7 +83,7 @@
 #endif
 
 /* Postgres */
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	#include <libpq-fe.h>
 #endif
 
@@ -328,7 +328,7 @@ typedef struct {
 	/* MySQL stuff */
 	MYSQL		*myhndl;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	/* PostgreSQL stuff */
 	PGconn		*pgconn;
 #endif
@@ -520,7 +520,7 @@ void db_mysql_acl_role_disconnect_user(server_cb_inf *, char *, char *);
 #endif
 
 /* db_postgres.c */
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 void db_postgres_backend_terminate(server_cb_inf *inf, int code);
 void db_postgres_set_secure_searchpath(server_cb_inf *inf);
 void db_postgres_open_connection(server_cb_inf *);

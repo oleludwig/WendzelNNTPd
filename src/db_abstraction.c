@@ -37,7 +37,7 @@ db_authinfo_check(server_cb_inf *inf)
 		db_mysql_authinfo_check(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_authinfo_check(inf);
 		break;
@@ -61,7 +61,7 @@ db_list(server_cb_inf *inf, int cmdtyp, char *wildmat)
 		db_mysql_list(inf, cmdtyp, wildmat);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_list(inf, cmdtyp, wildmat);
 		break;
@@ -86,7 +86,7 @@ db_xhdr(server_cb_inf *inf, short message_id_flg, int xhdr, char *article,
 		db_mysql_xhdr(inf, message_id_flg, xhdr, article, min, max);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_xhdr(inf, message_id_flg, xhdr, article, min, max);
 		break;
@@ -110,7 +110,7 @@ db_article(server_cb_inf *inf, int type, char *param)
 		db_mysql_article(inf, type, param);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_article(inf, type, param);
 		break;
@@ -134,7 +134,7 @@ db_group(server_cb_inf *inf, char *group)
 		db_mysql_group(inf, group);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_group(inf, group);
 		break;
@@ -158,7 +158,7 @@ db_listgroup(server_cb_inf *inf, char *group)
 		db_mysql_listgroup(inf, group);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_listgroup(inf, group);
 		break;
@@ -182,7 +182,7 @@ db_xover(server_cb_inf *inf, u_int32_t min, u_int32_t max)
 		db_mysql_xover(inf, min, max);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_xover(inf, min, max);
 		break;
@@ -208,7 +208,7 @@ db_get_high_value(server_cb_inf *inf, char *newsgroup)
 		retval = db_mysql_get_high_value(inf, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		retval = db_postgres_get_high_value(inf, newsgroup);
 		break;
@@ -236,7 +236,7 @@ db_chk_if_msgid_exists(server_cb_inf *inf, char *newsgroup, char *msgid)
 		retval = db_mysql_chk_if_msgid_exists(inf, newsgroup, msgid);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		retval = db_postgres_chk_if_msgid_exists(inf, newsgroup, msgid);
 		break;
@@ -262,7 +262,7 @@ db_check_newsgroup_posting_allowed(server_cb_inf *inf)
 		db_mysql_chk_newsgroup_posting_allowed(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_chk_newsgroup_posting_allowed(inf);
 		break;
@@ -286,7 +286,7 @@ db_check_newsgroup_existence(server_cb_inf *inf)
 		db_mysql_chk_newsgroup_existence(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_chk_newsgroup_existence(inf);
 		break;
@@ -310,7 +310,7 @@ db_check_user_existence(server_cb_inf *inf)
 		db_mysql_chk_user_existence(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_chk_user_existence(inf);
 		break;
@@ -334,7 +334,7 @@ db_check_role_existence(server_cb_inf *inf)
 		db_mysql_chk_role_existence(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_chk_role_existence(inf);
 		break;
@@ -362,7 +362,7 @@ db_post_insert_into_postings(server_cb_inf *inf, char *message_id,
 			from, ngstrpb, subj, linecount, add_to_hdr);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_post_insert_into_postings(inf, message_id, ltime,
 			from, ngstrpb, subj, linecount, add_to_hdr);
@@ -387,7 +387,7 @@ db_post_update_high_value(server_cb_inf *inf, u_int32_t high, char *newsgroup)
 		db_mysql_post_update_high_value(inf, high, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_post_update_high_value(inf, high, newsgroup);
 		break;
@@ -414,7 +414,7 @@ db_post_insert_into_ngposts(server_cb_inf *inf, char *message_id, char *newsgrou
 			new_high);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_post_insert_into_ngposts(inf, message_id, newsgroup,
 			new_high);
@@ -442,7 +442,7 @@ db_acl_check_user_group(server_cb_inf *inf, char *user, char *newsgroup)
 		return db_mysql_acl_check_user_group(inf, user, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		return db_postgres_acl_check_user_group(inf, user, newsgroup);
 		break;
@@ -471,7 +471,7 @@ db_list_users(server_cb_inf *inf)
 		db_mysql_list_users(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_list_users(inf);
 		break;
@@ -495,7 +495,7 @@ db_list_acl_tables(server_cb_inf *inf)
 		db_mysql_list_acl_tables(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_list_acl_tables(inf);
 		break;
@@ -519,7 +519,7 @@ db_acl_add_user(server_cb_inf *inf, char *username, char *newsgroup)
 		db_mysql_acl_add_user(inf, username, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_add_user(inf, username, newsgroup);
 		break;
@@ -543,7 +543,7 @@ db_acl_del_user(server_cb_inf *inf, char *username, char *newsgroup)
 		db_mysql_acl_del_user(inf, username, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_del_user(inf, username, newsgroup);
 		break;
@@ -567,7 +567,7 @@ db_acl_add_role(server_cb_inf *inf, char *role)
 		db_mysql_acl_add_role(inf, role);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_add_role(inf, role);
 		break;
@@ -591,7 +591,7 @@ db_acl_del_role(server_cb_inf *inf, char *role)
 		db_mysql_acl_del_role(inf, role);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_del_role(inf, role);
 		break;
@@ -615,7 +615,7 @@ db_acl_role_connect_group(server_cb_inf *inf, char *role, char *newsgroup)
 		db_mysql_acl_role_connect_group(inf, role, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_role_connect_group(inf, role, newsgroup);
 		break;
@@ -639,7 +639,7 @@ db_acl_role_disconnect_group(server_cb_inf *inf, char *role, char *newsgroup)
 		db_mysql_acl_role_disconnect_group(inf, role, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_role_disconnect_group(inf, role, newsgroup);
 		break;
@@ -663,7 +663,7 @@ db_acl_role_connect_user(server_cb_inf *inf, char *role, char *user)
 		db_mysql_acl_role_connect_user(inf, role, user);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_role_connect_user(inf, role, user);
 		break;
@@ -687,7 +687,7 @@ db_acl_role_disconnect_user(server_cb_inf *inf, char *role, char *user)
 		db_mysql_acl_role_disconnect_user(inf, role, user);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_acl_role_disconnect_user(inf, role, user);
 		break;
@@ -716,7 +716,7 @@ db_create_newsgroup(server_cb_inf *inf, char *newsgroup, char post_flg)
 		db_mysql_create_newsgroup(inf, newsgroup, post_flg);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_create_newsgroup(inf, newsgroup, post_flg);
 		break;
@@ -740,7 +740,7 @@ db_delete_newsgroup(server_cb_inf *inf, char *newsgroup)
 		db_mysql_delete_newsgroup(inf, newsgroup);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_delete_newsgroup(inf, newsgroup);
 		break;
@@ -764,7 +764,7 @@ db_modify_newsgroup(server_cb_inf *inf, char *newsgroup, char post_flg)
 		db_mysql_modify_newsgroup(inf, newsgroup, post_flg);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_modify_newsgroup(inf, newsgroup, post_flg);
 		break;
@@ -788,7 +788,7 @@ db_add_user(server_cb_inf *inf, char *username, char *password /* this is a hash
 		db_mysql_add_user(inf, username, password);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_add_user(inf, username, password);
 		break;
@@ -812,7 +812,7 @@ db_del_user(server_cb_inf *inf, char *username)
 		db_mysql_del_user(inf, username);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_del_user(inf, username);
 		break;
@@ -850,7 +850,7 @@ db_secure_sqlbuffer(server_cb_inf *inf, char *in)
 		mysql_real_escape_string(inf->servinf->myhndl, sec_cmd, in, strlen(in));
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		sec_cmd = (char *) calloc((strlen(in) * 2) + 1, sizeof(char));
 		if (!sec_cmd) {
@@ -885,7 +885,7 @@ db_secure_sqlbuffer_free(char *buf)
 		free(buf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		free(buf);
 		break;
@@ -912,7 +912,7 @@ db_open_connection(server_cb_inf *inf)
 		db_mysql_open_connection(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_open_connection(inf);
 		break;
@@ -939,7 +939,7 @@ db_close_connection(server_cb_inf *inf)
 		db_mysql_close_connection(inf);
 		break;
 #endif
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_close_connection(inf);
 		break;
@@ -956,7 +956,7 @@ void
 db_store_message_body(server_cb_inf *inf, char *message_id, char *body)
 {
 	switch (dbase) {
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		db_postgres_store_message_body(inf, message_id, body);
 		break;
@@ -973,7 +973,7 @@ char*
 db_load_message_body(server_cb_inf *inf, char *message_id)
 {
 	switch (dbase) {
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		return db_postgres_load_message_body(inf, message_id);
 		break;
@@ -990,7 +990,7 @@ char*
 db_get_uniqnum(server_cb_inf *inf)
 {
 	switch (dbase) {
-#ifndef NOPOSTGRES
+#ifdef NOPOSTGRES
 	case DBASE_POSTGRES:
 		return db_postgres_get_uniqnum(inf);
 		break;
