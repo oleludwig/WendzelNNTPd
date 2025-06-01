@@ -384,7 +384,7 @@ int main() {
   return 0;
 }
 EOF
-	$COMPILER $ADD_LNKFLAGS -o temp temp.c -lmysqlclient -I/usr/local/include -L/usr/local/lib >/dev/null 2>&1; check "yes" "no" "You need the MySQL client library and their development files (or disable MySQL support, cf. ./configure --help)."
+	$COMPILER $ADD_LNKFLAGS -o temp temp.c -lmysqlclient -I/usr/local/include -L/usr/local/lib/mysql; check "yes" "no" "You need the MySQL client library and their development files (or disable MySQL support, cf. ./configure --help)."
 	rm -f temp temp.c
 fi
 
@@ -567,7 +567,7 @@ echo "FAKECDIR=$FAKECDIR">> $MAKEFILE_INC
 
 echo "
 SRC=src
-LIBDIRS=-L/usr/local/lib
+LIBDIRS=-L/usr/local/lib -L/usr/local/lib/mysql
 
 INCDIRS=-I. -I./src -I./src/include -I/usr/local/include -I/usr/include/postgresql
 CPP=g++
