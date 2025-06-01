@@ -72,8 +72,6 @@ jobs:
             pkg install -y mariadb114-client
           run: |
             ./configure
-            ls -l /usr/local/include/mysql/
-            ls -l /usr/include/mysql/
             make
             make install
 
