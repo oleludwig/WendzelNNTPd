@@ -50,7 +50,7 @@ jobs:
           prepare: |
             pkg_add bison
             pkg_add mhash
-            pkg_add mysql-server
+            pkg_add mariadb-server
           run: |
             ./configure
             make
@@ -69,7 +69,7 @@ jobs:
             pkg install -y sqlite3
             pkg install -y bison
             pkg install -y mhash
-            pkg install -y mysql-server
+            pkg install -y mysql84-server
           run: |
             ./configure
             make
