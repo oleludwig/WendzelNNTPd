@@ -567,7 +567,7 @@ echo "FAKECDIR=$FAKECDIR">> $MAKEFILE_INC
 
 echo "
 SRC=src
-LIBDIRS=-L/usr/local/lib
+LIBDIRS=-L/usr/local/lib -L/usr/local/lib/mysql
 
 INCDIRS=-I. -I./src -I./src/include -I/usr/local/include -I/usr/include/postgresql -I/usr/include/pgsql
 CPP=g++
