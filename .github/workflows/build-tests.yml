@@ -69,7 +69,7 @@ jobs:
             pkg install -y sqlite3
             pkg install -y bison
             pkg install -y mhash
-            pkg install -y mysql84-server
+            pkg install -y mariadb114-server
           run: |
             ./configure
             make
