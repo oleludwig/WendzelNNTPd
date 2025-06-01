@@ -22,6 +22,22 @@ jobs:
       - name: Run make install
         run: make install
 
+  build-test-ubuntu-arm:
+    runs-on: ubuntu-24.04-arm
+    name: Build wendzelnntpd on Ubuntu
+    container:
+      image: ubuntu:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install needed packages
+        run: apt -y update && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make golang-go openssl libssl-dev
+      - name: Run configuration
+        run: ./configure
+      - name: Run make
+        run: make
+      - name: Run make install
+        run: make install
+
   build-test-debian:
     runs-on: ubuntu-latest
     name: Build wendzelnntpd on Debian
