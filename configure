@@ -384,7 +384,7 @@ int main() {
   return 0;
 }
 EOF
-	$COMPILER $ADD_LNKFLAGS -o temp temp.c -lmysqlclient -I/usr/local/include -L/usr/local/lib -v; check "yes" "no" "You need the MySQL client library and their development files (or disable MySQL support, cf. ./configure --help)."
+	$COMPILER $ADD_LNKFLAGS -o temp temp.c -lmysqlclient -I/usr/local/include -L/usr/local/lib/mysql -v; check "yes" "no" "You need the MySQL client library and their development files (or disable MySQL support, cf. ./configure --help)."
 	rm -f temp temp.c
 fi
 
