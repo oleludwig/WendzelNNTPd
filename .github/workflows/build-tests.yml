@@ -86,7 +86,7 @@ jobs:
           usesh: true
           prepare: |
             /usr/sbin/pkg_add bison
-            /usr/sbin/pkg_add libmhash
+            /usr/sbin/pkg_add mhash
           run: |
             MYSQL=NO ./configure
             make
