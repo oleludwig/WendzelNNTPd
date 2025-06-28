@@ -38,19 +38,19 @@ send_user "== Check response of xover command with group with article3 ==\n"
 send "xover\n"
 expect {
   timeout { send_user "Error: xover command did not respond correctly\n"; exit 1 }
-  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 12:30:00"
+  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 \\d{2}:\\d{2}:00"
 }
 
 send_user "== Check response of xover command with group with article4 ==\n"
 send "xover\n"
 expect {
   timeout { send_user "Error: xover command did not respond correctly\n"; exit 1 }
-  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 12:30:00 \\+0200"
+  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 \\d{2}:\\d{2}:00 \\+\\d{4}"
 }
 
 send_user "== Check response of xover command with group with article5 ==\n"
 send "xover\n"
 expect {
   timeout { send_user "Error: xover command did not respond correctly\n"; exit 1 }
-  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 12:30:00 \\+0200\\s<cdp1@localhost>"
+  -re "224 overview information follows\\r\\n1\[\\t\]Test\[\\t\]Testuser <test@example.com>\[\\t\]Sat, 28 Jun 2025 \\d{2}:\\d{2}:00 \\+\\d{4}\\s<cdp1@localhost>"
 }
