@@ -32,7 +32,6 @@ jobs:
             -d -it \
             debian:stable-slim \
             /bin/sh
-      - run: docker exec testcontainer bash -c "echo $USER && echo $EUID && id && id -u"
       - name: Install dependencies
         run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev"
       - name: configure
@@ -42,7 +41,7 @@ jobs:
       - name: make install
         run: docker exec testcontainer bash -c "make install"
       - name: Setup ssl certificates
-        run: docker exec testcontainer bash -c "./create_certificate --environment localhost"
+        run: docker exec testcontainer bash -c "./create_certificate --environment local"
       - name: Initialize test data
         run: docker exec testcontainer bash -c "cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/"
       - name: run wendzelnntpd
