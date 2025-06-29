@@ -24,7 +24,7 @@ jobs:
       - name: Start Docker container
         run: |
           docker run \
-            --network ip6net
+            --network ip6net \
             --rm \
             -v $(pwd):${{ github.workspace }} \
             -w ${{ github.workspace }} \
