@@ -33,7 +33,7 @@ jobs:
             debian:stable-slim \
             /bin/sh
       - name: Install dependencies
-        run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev"
+        run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev procps"
       - name: configure
         run: docker exec testcontainer bash -c "./configure"
       - name: make
@@ -62,5 +62,9 @@ jobs:
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
       - name: expect tests IPv6
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
+      - name: Enable mandatory tls
+        run: docker exec testcontainer bash -c "echo \"tls-is-mandatory\" >> /usr/local/etc/wendzelnntpd.conf && pkill -9 wendzelnntpd && wendzelnntpd -d"
+      - name: expect test for mandatory tls
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} expect tests/special/nntp-mandatory-tls-test.exp
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
