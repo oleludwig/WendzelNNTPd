@@ -32,6 +32,7 @@ jobs:
             -d -it \
             debian:stable-slim \
             /bin/sh
+      - run: docker exec testcontainer bash -c "echo $USER && echo $EUID && id"
       - name: Install dependencies
         run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev"
       - name: configure
