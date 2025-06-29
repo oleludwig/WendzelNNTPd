@@ -44,6 +44,9 @@ jobs:
         run: docker exec testcontainer bash -c "wendzelnntpd -d"
       - name: get container ip
         run: echo "ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' testcontainer)" >> $GITHUB_ENV
+      - run: echo "$(docker inspect testcontainer)"
+      - run: ip a
+      - run: docker exec testcontainer bash -c "ip a"
       - name: Smoketest
         run: netcat ${{ env.ip }} 119 -w 1
       - name: expect tests
