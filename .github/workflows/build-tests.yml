@@ -46,6 +46,10 @@ jobs:
         run: docker exec testcontainer bash -c "cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/"
       - name: run wendzelnntpd
         run: docker exec testcontainer bash -c "wendzelnntpd -d"
+      - name: Copy certificates from container to host
+        run: cd unittesting/tls-testing && mkdir tmp && docker cp testcontainer:/usr/local/etc/ssl/ca.crt tmp/ca-self.crt && docker cp testcontainer:/usr/local/etc/ssl/ca-key.pem tmp/ca-self.key
+      - name: Create client cert for mutual tls tests
+        run: cd unittesting/tls-testing && ./create-client-cert.sh
       - name: get container ipv4
         run: echo "ipv4=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' testcontainer)" >> $GITHUB_ENV
       - name: get container ipv6
