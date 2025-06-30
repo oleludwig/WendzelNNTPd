@@ -22,6 +22,7 @@ jobs:
           MARIADB_ROOT_PASSWORD: rootpass
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpass
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
