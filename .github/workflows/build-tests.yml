@@ -102,7 +102,7 @@ jobs:
           && sed -i 's/^database-engine sqlite3$/database-engine mysql/' /usr/local/etc/wendzelnntpd.conf
           && sed -i 's/^database-server 127.0.0.1$/database-server mariadb/' /usr/local/etc/wendzelnntpd.conf"
       - name: Initialize test data in mariadb
-        run: mysql --host=127.0.0.1 --user=root --password=rootpass --execute "source database/mysql_db_struct.sql; GRANT SELECT, INSERT, UPDATE, DELETE ON WendzelNNTPd.* TO 'testuser'@'%'; source create_db_test_data.sql"
+        run: mysql --host=127.0.0.1 --user=root --password=rootpass --execute "source database/mysql_db_struct.sql; GRANT SELECT, INSERT, UPDATE, DELETE ON WendzelNNTPd.* TO 'testuser'@'%'; source database/create_db_test_data.sql"
       - name: restart wendzelnntpd
         run: docker exec testcontainer bash -c "pkill -9 wendzelnntpd && wendzelnntpd -d"
       - name: expect tests IPv4
