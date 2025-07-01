@@ -93,5 +93,11 @@ jobs:
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} expect tests/special/nntp-mandatory-tls-test.exp
       - name: reset config and switch to mysql database
         run: docker exec testcontainer bash -c "cd unittesting/tls-testing && cp test-files/wendzelnntpd.conf /usr/local/etc/ && sed -i 's/^database-engine sqlite3$/database-engine mysql/' /usr/local/etc/wendzelnntpd.conf"
+      - name: restart wendzelnntpd
+        run: docker exec testcontainer bash -c "pkill -9 wendzelnntpd && wendzelnntpd -d"
+      - name: expect tests IPv4
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
+      - name: expect tests IPv6
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
