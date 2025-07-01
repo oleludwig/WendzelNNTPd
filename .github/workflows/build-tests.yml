@@ -23,6 +23,8 @@ jobs:
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpass
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
+        ports:
+          - 3306:3306
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
@@ -30,7 +32,7 @@ jobs:
         with:
           platforms: ${{ matrix.platform }}
       - name: Install test tools
-        run: sudo apt-get update -y && sudo apt-get install -y netcat-openbsd expect
+        run: sudo apt-get update -y && sudo apt-get install -y netcat-openbsd expect mariadb-client
       - run: docker network create --ipv6 ip6net
       - name: Start Docker container
         run: |
@@ -99,6 +101,8 @@ jobs:
           && cp test-files/wendzelnntpd.conf /usr/local/etc/
           && sed -i 's/^database-engine sqlite3$/database-engine mysql/' /usr/local/etc/wendzelnntpd.conf
           && sed -i 's/^database-server 127.0.0.1$/database-server mariadb/' /usr/local/etc/wendzelnntpd.conf"
+      - name: Initialize test data in mariadb
+        run: mysql --host=localhost --user=root --password=rootpass < database/mysql_db_struct.sql
       - name: restart wendzelnntpd
         run: docker exec testcontainer bash -c "pkill -9 wendzelnntpd && wendzelnntpd -d"
       - name: expect tests IPv4
