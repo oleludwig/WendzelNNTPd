@@ -78,9 +78,9 @@ jobs:
       - name: Create client cert for mutual tls tests
         run: cd unittesting/tls-testing && ./create-client-cert.sh
       - name: get container ipv4
-        run: echo "ipv4=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' testcontainer)" >> $GITHUB_ENV
+        run: echo "ipv4=$(docker inspect -f '{{.NetworkSettings.Networks.ip6net.IPAddress}}' testcontainer)" >> $GITHUB_ENV
       - name: get container ipv6
-        run: echo "ipv6=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.GlobalIPv6Address}}{{end}}' testcontainer)" >> $GITHUB_ENV
+        run: echo "ipv6=$(docker inspect -f '{{.NetworkSettings.Networks.ip6net.GlobalIPv6Address}}' testcontainer)" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
       - name: Smoketest IPv6
