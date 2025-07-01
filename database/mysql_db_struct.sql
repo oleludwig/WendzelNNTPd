@@ -23,7 +23,7 @@ CREATE TABLE postings (
    `newsgroups` VARCHAR(2048),
    `subject` VARCHAR(2048),
    `lines` VARCHAR(10),
-   `header` VARCHAR(20000),
+   `header` TEXT,
    INDEX(`msgid`),
    PRIMARY KEY(`msgid`)
  ) ENGINE=INNODB;
