@@ -45,7 +45,7 @@ CREATE TABLE ngposts (
 -- Authentification (as well as ACL)
 CREATE TABLE users (
    `name` VARCHAR(50),
-   `password` VARCHAR(50),
+   `password` VARCHAR(64),
    INDEX(`name`),
    PRIMARY KEY(`name`)
 ) ENGINE=INNODB;
