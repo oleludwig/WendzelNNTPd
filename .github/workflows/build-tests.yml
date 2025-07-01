@@ -20,8 +20,9 @@ jobs:
         image: mariadb:latest
         env:
           MARIADB_ROOT_PASSWORD: rootpass
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpass
+          MARIADB_USER: testuser
+          MARIADB_PASSWORD: testpass
+          MARIADB_DATABASE: WendzelNNTPd
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
         ports:
           - 3306:3306
