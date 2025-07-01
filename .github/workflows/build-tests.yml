@@ -45,7 +45,7 @@ jobs:
             ${{ matrix.image }} \
             /bin/sh
       - name: Connect container to the docker network with the databases
-        run: docker network connect $(docker network ls -f name=ip6 --format "{{.ID}}") testcontainer
+        run: docker network connect $(docker network ls -f name=github_network --format "{{.ID}}") testcontainer
       - name: Install dependencies with apt
         run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev procps"
         if: ${{ matrix.image == 'debian:stable-slim' || matrix.image == 'ubuntu:latest' }}
