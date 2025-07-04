@@ -143,7 +143,9 @@ jobs:
           && sed -i 's/^database-server 127.0.0.1$/database-server postgres/' /usr/local/etc/wendzelnntpd.conf"
       - name: Initialize test data in postgresql database
         run: >
-          psql postgresql://testuser:testpass@127.0.0.1:5432/wendzelnntpd --file unittesting/tls-testing/create_db_test_data.sql
+          psql postgresql://testuser:testpass@127.0.0.1:5432/wendzelnntpd
+          --file database/postgres_db_struct.sql
+          --file unittesting/tls-testing/create_db_test_data.sql
       - name: restart wendzelnntpd
         run: docker exec testcontainer bash -c "pkill -9 wendzelnntpd && wendzelnntpd -d"
       - name: expect tests IPv4
