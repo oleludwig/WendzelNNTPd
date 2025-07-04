@@ -126,7 +126,8 @@ jobs:
       - name: Initialize test data in mariadb
         run: >
           mysql --host=127.0.0.1 --user=root --password=rootpass --execute
-          "source database/mysql_db_struct.sql;
+          "set session sql_mode='ANSI_QUOTES';
+          source database/mysql_db_struct.sql;
           source unittesting/tls-testing/create_db_test_data.sql;
           GRANT SELECT, INSERT, UPDATE, DELETE ON WendzelNNTPd.* TO 'testuser'@'%'"
       - name: restart wendzelnntpd
