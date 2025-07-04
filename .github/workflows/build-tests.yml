@@ -14,7 +14,22 @@ jobs:
       matrix:
         platform:
           - linux/amd64
+          - linux/386
+          - linux/arm/v5
+          - linux/arm/v7
+          - linux/arm64/v8
+          - linux/ppc64le
+          - linux/s390x
         image: [debian:stable-slim]
+        include:
+          - platform: linux/amd64
+            image: ubuntu:latest
+          - platform: linux/amd64
+            image: fedora:latest
+          - platform: linux/amd64
+            image: opensuse/leap:latest
+          - platform: linux/amd64
+            image: archlinux:latest
     services:
       mariadb:
         image: mariadb:latest
@@ -60,6 +75,9 @@ jobs:
       - name: Install dependencies with pacman
         run: docker exec testcontainer bash -c "pacman -Syu --noconfirm gcc flex bison sqlite mariadb-libs ca-certificates mhash make openssl procps-ng"
         if: ${{ matrix.image == 'archlinux:latest' }}
+      - name: Patch testuser password
+        run: docker exec testcontainer bash -c "sed -i 's/ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d/c336f7d5bab8ccf4860fc53cb33290bb794d481590db02c0936fbaa74099c77d/' test-files/wendzelnntpd.conf"
+        if: ${{ !(matrix.platform == 'linux/amd64' || matrix.platform == 'linux/386') }}
       - name: configure
         run: docker exec testcontainer bash -c "./configure"
       - name: make
@@ -70,9 +88,6 @@ jobs:
         run: docker exec testcontainer bash -c "./create_certificate --environment local"
       - name: Initialize test data
         run: docker exec testcontainer bash -c "cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/"
-      - name: Patch testuser password
-        run: docker exec testcontainer bash -c "echo \"update users set password = 'c336f7d5bab8ccf4860fc53cb33290bb794d481590db02c0936fbaa74099c77d' where name = 'testuser'\" | sqlite3 /var/spool/news/wendzelnntpd/usenet.db"
-        if: ${{ !(matrix.platform == 'linux/amd64' || matrix.platform == 'linux/386') }}
       - name: run wendzelnntpd
         run: docker exec testcontainer bash -c "wendzelnntpd -d"
       - name: Copy certificates from container to host
