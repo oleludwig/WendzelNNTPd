@@ -99,7 +99,7 @@ jobs:
         run: >
           docker exec testcontainer bash -c "zypper install -y
           gcc flex bison sqlite3 sqlite3-devel libmariadb-devel ca-certificates mhash-devel make openssl
-          libopenssl-devel libpq5 procps"
+          libopenssl-devel postgresql-devel procps"
         if: ${{ matrix.image == 'opensuse/leap:latest' }}
       - name: Install dependencies with pacman
         run: >
