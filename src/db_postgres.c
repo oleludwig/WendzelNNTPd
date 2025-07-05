@@ -694,9 +694,6 @@ db_postgres_article(server_cb_inf *inf,
 	    break;
 
 	case ARTCLTYP_CURRENT:
-	    if (*inf->servinf->selected_article == '\0') {
-	        return;
-	    }
 	    /* select * from ngposts where ng='%s' and messageid='%s'; */
 	    sql_cmd = "select * from ngposts where ng=$1 and postnum=$2";
 	    paramValues[0] = inf->servinf->selected_group;
