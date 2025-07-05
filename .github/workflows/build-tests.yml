@@ -69,7 +69,7 @@ jobs:
       - name: Connect container to the docker network with the databases
         run: docker network connect $(docker network ls -f name=github_network --format "{{.ID}}") testcontainer
       - name: Install dependencies with apt
-        run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev procps"
+        run: docker exec testcontainer bash -c "apt-get update -y && apt-get install -y gcc flex bison sqlite3 libsqlite3-dev mariadb-client libmariadb-dev-compat ca-certificates libmariadb-dev libmhash-dev make openssl libssl-dev libpq-dev procps"
         if: ${{ matrix.image == 'debian:stable-slim' || matrix.image == 'ubuntu:latest' }}
       - name: Install dependencies with dnf
         run: docker exec testcontainer bash -c "dnf -y update && dnf -y install gcc flex bison sqlite sqlite-devel mariadb-connector-c-devel ca-certificates mhash-devel make openssl openssl-devel procps-ng"
@@ -86,7 +86,7 @@ jobs:
           "sed -i 's/ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d/c336f7d5bab8ccf4860fc53cb33290bb794d481590db02c0936fbaa74099c77d/' unittesting/tls-testing/create_db_test_data.sql"
         if: ${{ !(matrix.platform == 'linux/amd64' || matrix.platform == 'linux/386') }}
       - name: configure
-        run: docker exec testcontainer bash -c "./configure"
+        run: docker exec testcontainer bash -c "POSTGRES=YES ./configure"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
