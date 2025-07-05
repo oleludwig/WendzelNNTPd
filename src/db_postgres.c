@@ -24,7 +24,6 @@
 #include "main.h"
 #include "cdpstrings.h"
 
-
 extern unsigned short use_auth;	/* config.y */
 extern unsigned short use_acl; /* config.y */
 extern unsigned short be_verbose; /* config.y */
@@ -811,7 +810,10 @@ db_postgres_group_cb_set_first_article_in_group(server_cb_inf *inf)
 	}
 
 	if (PQntuples(res) == 1) {
-	    inf->servinf->selected_article = strdup(PQgetvalue(res, 0, 0));
+		char *postnum = PQgetvalue(res, 0, 0);
+		if (postnum[0] != '\0') {
+			inf->servinf->selected_article = strdup(postnum);
+		}
 	}
 	PQclear(res);
 }
