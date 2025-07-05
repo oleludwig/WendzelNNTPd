@@ -510,8 +510,8 @@ db_postgres_xhdr(server_cb_inf *inf, short message_id_flg, int xhdr, char *artic
 	snprintf(min_s, 64-1, "%d", min);
 	snprintf(max_s, 64-1, "%d", max);
 
-	const char* paramValues[3];
-	int paramLengths[3];
+	const char* paramValues[4];
+	int paramLengths[4];
 	int paramFormats[] = {0,0,0,0};
 	int resultFormat = 0;
 
