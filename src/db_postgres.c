@@ -512,7 +512,7 @@ db_postgres_xhdr(server_cb_inf *inf, short message_id_flg, int xhdr, char *artic
 
 	const char* paramValues[3];
 	int paramLengths[3];
-	int paramFormats[] = {0,0,0};
+	int paramFormats[] = {0,0,0,0};
 	int resultFormat = 0;
 
 
@@ -557,12 +557,15 @@ db_postgres_xhdr(server_cb_inf *inf, short message_id_flg, int xhdr, char *artic
 	    param++;
 	} else {
 	    sql_cmd =
-		"select * from xhdr_get($1, 'test.g1', null, $2, $3)";
-	    paramValues[1] = min_s;
-	    paramLengths[1] = strlen(paramValues[1]);
-	    param++;
-	    paramValues[2] = max_s;
+		"select * from xhdr_get($1, $2, null, $3, $4)";
+		paramValues[1] = inf->servinf->selected_group;
+        paramLengths[1] = strlen(paramValues[1]);
+        param++;
+	    paramValues[2] = min_s;
 	    paramLengths[2] = strlen(paramValues[2]);
+	    param++;
+	    paramValues[3] = max_s;
+	    paramLengths[3] = strlen(paramValues[3]);
 	    param++;
 	}
 
