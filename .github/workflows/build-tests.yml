@@ -232,6 +232,9 @@ jobs:
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
           run: |
+            echo $PATH
+            pwd
+            id
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib  MYSQL=NO ./configure
             make
             make install
