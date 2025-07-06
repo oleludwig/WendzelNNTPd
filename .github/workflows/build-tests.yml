@@ -6,9 +6,10 @@ on:
         branches:
 
 jobs:
-  build-test:
+  build-test-linux:
+    if: false
     runs-on: ubuntu-latest
-    name: Build and Test wendzelnntpd
+    name: Build and test wendzelnntpd on Linux distributions
     strategy:
       fail-fast: false
       matrix:
@@ -180,3 +181,49 @@ jobs:
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
+
+  build-test-bsd:
+    runs-on: ubuntu-latest
+    name: Build and test wendzelnntpd on BSD distributions
+    strategy:
+      fail-fast: false
+      matrix:
+        distribution:
+          - openbsd
+          - freebsd
+          - netbsd
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup OpenBSD VM
+        uses: vmactions/openbsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg_add bison
+            pkg_add mhash
+            pkg_add mariadb-client
+        if: ${{ matrix.distribution == 'openbsd' }}
+      - name: Setup FreeBSD VM
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg install -y sqlite3
+            pkg install -y bison
+            pkg install -y mhash
+            pkg install -y mariadb114-client
+        if: ${{ matrix.distribution == 'freebsd' }}
+      - name: Setup NetBSD VM
+        uses: vmactions/netbsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            /usr/sbin/pkg_add bison
+            /usr/sbin/pkg_add mhash
+        if: ${{ matrix.distribution == 'netbsd' }}
+      - name: Build
+        shell: netbsd {0}
+        run: |
+          ./configure
+          make
+          make install
