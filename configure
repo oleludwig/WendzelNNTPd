@@ -569,7 +569,7 @@ echo "
 SRC=src
 LIBDIRS=-L/usr/local/lib -L/usr/local/lib/mysql
 
-INCDIRS=-I. -I./src -I./src/include -I/usr/local/include -I/usr/include/postgresql -I/usr/include/postgresql -I/usr/include/pgsql
+INCDIRS=-I. -I./src -I./src/include -I/usr/local/include -I/usr/local/include/postgresql -I/usr/include/postgresql -I/usr/include/pgsql
 CPP=g++
 CC=$COMPILER
 LEX=flex
