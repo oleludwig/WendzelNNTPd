@@ -201,6 +201,8 @@ jobs:
             ls -l /usr
             ls -l /usr/include
             ls -l /usr/include/postgresql
+            ls -l /usr/local/include
+            ls -l /usr/local/include/postgresql
             POSTGRES=YES ./configure
             make
             make install
