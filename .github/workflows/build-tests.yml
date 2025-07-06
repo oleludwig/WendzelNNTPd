@@ -226,9 +226,9 @@ jobs:
             POSTGRES=YES ./configure
             make
             make install
-      - name: Setup ssl certificates
-        shell: freebsd {0}
-        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local"
+#      - name: Setup ssl certificates
+#        shell: freebsd {0}
+#        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local
       - name: Initialize test data
         shell: freebsd {0}
         run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
@@ -254,7 +254,7 @@ jobs:
             make install
       - name: Setup ssl certificates
         shell: netbsd {0}
-        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local"
+        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local
       - name: Initialize test data
         shell: netbsd {0}
         run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
