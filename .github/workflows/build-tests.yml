@@ -204,7 +204,9 @@ jobs:
         shell: openbsd {0}
         run: |
           cd $GITHUB_WORKSPACE
-          pwd; ls -l; ls -l ./create_certificate; ./create_certificate --environment local
+          ls -l /home/runner/.local/bin
+          cat /home/runner/.local/bin/openbsd
+          pwd; ls -l; ls -l ./create_certificate; create_certificate; ./create_certificate --environment local
       - name: Initialize test data
         shell: openbsd {0}
         run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
