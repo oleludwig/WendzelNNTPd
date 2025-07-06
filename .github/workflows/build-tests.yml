@@ -213,7 +213,7 @@ jobs:
             pkg install -y sqlite3
             pkg install -y bison
             pkg install -y mhash
-            pkg install -y mariadb114-client
+            pkg install -y mariadb118-client
           run: |
             ./configure
             make
@@ -231,6 +231,7 @@ jobs:
           prepare: |
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
+            /usr/sbin/pkg_add mariadb118-client
           run: |
             export PATH=/sbin:/usr/sbin:$PATH
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib ./configure
