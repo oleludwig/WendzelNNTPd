@@ -222,8 +222,9 @@ jobs:
             /usr/sbin/pkg_add mhash
         if: ${{ matrix.distribution == 'netbsd' }}
       - name: Build
-        shell: netbsd {0}
+        shell: ${{ matrix.distribution }} {0}
         run: |
+          cd ${{ github.workspace }}
           ./configure
           make
           make install
