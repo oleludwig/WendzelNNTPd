@@ -202,7 +202,7 @@ jobs:
             make install
       - name: Setup ssl certificates
         shell: openbsd {0}
-        run: cd $GITHUB_WORKSPACE; pwd; ls -l; ./create_certificate --environment local
+        run: cd $GITHUB_WORKSPACE; pwd; ls -l; ls -l ./create_certificate; ./create_certificate --environment local
       - name: Initialize test data
         shell: openbsd {0}
         run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
