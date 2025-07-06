@@ -432,7 +432,7 @@ cat << EOF >temp.c
 #include <mhash.h>
 int main(){MHASH td = mhash_init(MHASH_SHA256);return 0;}
 EOF
-$COMPILER $ADD_LNKFLAGS -I/usr/local/include/ -L/usr/local/lib/ -o temp temp.c -lmhash >/dev/null 2>&1; check "yes" "no" "You need a version of libmhash that supports SHA-256."
+$COMPILER $CFLAGS $ADD_LNKFLAGS -I/usr/local/include/ -L/usr/local/lib/ -o temp temp.c -lmhash >/dev/null 2>&1; check "yes" "no" "You need a version of libmhash that supports SHA-256."
 rm -f temp temp.c
 
 ###############
