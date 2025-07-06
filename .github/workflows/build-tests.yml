@@ -195,8 +195,9 @@ jobs:
             pkg_add bison
             pkg_add mhash
             pkg_add mariadb-client
+            pkg_add postgresql-client
           run: |
-            ./configure
+            POSTGRES=YES ./configure
             make
             make install
 
@@ -214,8 +215,9 @@ jobs:
             pkg install -y bison
             pkg install -y mhash
             pkg install -y mariadb114-client
+            pkg install -y postgresql17-client
           run: |
-            ./configure
+            POSTGRES=YES ./configure
             make
             make install
 
@@ -232,8 +234,9 @@ jobs:
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
             /usr/sbin/pkg_add mariadb-client
+            /usr/sbin/pkg_add postgresql17-client
           run: |
             export PATH=/sbin:/usr/sbin:$PATH
-            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib ./configure
+            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
