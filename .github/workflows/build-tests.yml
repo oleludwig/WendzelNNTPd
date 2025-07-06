@@ -197,6 +197,10 @@ jobs:
             pkg_add mariadb-client
             pkg_add postgresql-client
           run: |
+            ls -l /
+            ls -l /usr
+            ls -l /usr/include
+            ls -l /usr/include/postgresql
             POSTGRES=YES ./configure
             make
             make install
