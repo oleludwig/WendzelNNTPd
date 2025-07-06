@@ -423,7 +423,7 @@ cat << EOF >temp.c
 #include <mhash.h>
 int main(){MHASH td = mhash_init(MHASH_MD5);return 0;}
 EOF
-$COMPILER $ADD_LNKFLAGS -I/usr/local/include/ -L/usr/local/lib/ -o temp temp.c  -lmhash >/dev/null 2>&1; check "yes" "no" "You need libmhash."
+$COMPILER $CFLAGS $ADD_LNKFLAGS -I/usr/local/include/ -L/usr/local/lib/ -o temp temp.c  -lmhash >/dev/null 2>&1; check "yes" "no" "You need libmhash."
 rm -f temp temp.c
 
 ###############
