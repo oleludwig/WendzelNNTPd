@@ -215,6 +215,7 @@ jobs:
             pkg install -y mhash
             pkg install -y mariadb114-client
           run: |
+            echo $PATH
             ./configure
             make
             make install
@@ -232,9 +233,8 @@ jobs:
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
           run: |
-            echo $PATH
-            pwd
-            id
+            cat /root/.profile
+            export PATH=$PATH:/sbin:/usr/sbin
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib  MYSQL=NO ./configure
             make
             make install
