@@ -233,6 +233,6 @@ jobs:
             /usr/sbin/pkg_add mhash
           run: |
             export PATH=/sbin:/usr/sbin:$PATH
-            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib MYSQL=NO ./configure
+            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib ./configure
             make
             make install
