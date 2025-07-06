@@ -231,6 +231,7 @@ jobs:
           prepare: |
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
+            /usr/sbin/pkg_add mariadb114-client
           run: |
             export PATH=/sbin:/usr/sbin:$PATH
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib ./configure
