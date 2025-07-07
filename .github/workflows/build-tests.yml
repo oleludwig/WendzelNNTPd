@@ -226,9 +226,9 @@ jobs:
             POSTGRES=YES ./configure
             make
             make install
-#      - name: Setup ssl certificates
-#        shell: freebsd {0}
-#        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local
+      - name: Setup ssl certificates
+        shell: freebsd {0}
+        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local
       - name: Initialize test data
         shell: freebsd {0}
         run: |
@@ -244,7 +244,7 @@ jobs:
         with:
           usesh: true
           prepare: |
-            /usr/sbin/pkg_bash bison
+            /usr/sbin/pkg_add bash
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
             /usr/sbin/pkg_add mariadb-client
