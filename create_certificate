@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "This is the WendzelNNTPd script for generating SSL certificates."
 echo
