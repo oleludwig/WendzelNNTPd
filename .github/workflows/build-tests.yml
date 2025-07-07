@@ -193,6 +193,7 @@ jobs:
           usesh: true
           sync: no
           prepare: |
+            pkg_add bash
             pkg_add bison
             pkg_add mhash
             pkg_add mariadb-client
@@ -215,6 +216,7 @@ jobs:
         with:
           usesh: true
           prepare: |
+            pkg install -y bash
             pkg install -y sqlite3
             pkg install -y bison
             pkg install -y mhash
@@ -242,6 +244,7 @@ jobs:
         with:
           usesh: true
           prepare: |
+            /usr/sbin/pkg_bash bison
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
             /usr/sbin/pkg_add mariadb-client
