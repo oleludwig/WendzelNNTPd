@@ -197,10 +197,6 @@ jobs:
             pkg_add mhash
             pkg_add mariadb-client
             pkg_add postgresql-client
-          run: |
-            POSTGRES=YES ./configure
-            make
-            make install
       - run: rsync -av ./ openbsd:./build/
       - name: Setup ssl certificates
         shell: openbsd {0}
