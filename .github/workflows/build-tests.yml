@@ -266,7 +266,7 @@ jobs:
             /usr/sbin/pkg_add postgresql17-client
           run: |
             export PATH=/sbin:/usr/sbin:$PATH
-            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib POSTGRES=YES ./configure
+            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
       - name: Setup ssl certificates
@@ -275,7 +275,7 @@ jobs:
       - name: Initialize test data
         shell: netbsd {0}
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
-      - name: run wendzelnntpd
+      - name: run /usr/local/sbin/wendzelnntpd
         shell: netbsd {0}
         run: wendzelnntpd -d
       - name: Smoketest IPv4
