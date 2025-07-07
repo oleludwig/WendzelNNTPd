@@ -191,6 +191,7 @@ jobs:
         uses: vmactions/openbsd-vm@v1
         with:
           usesh: true
+          sync: sshfs
           prepare: |
             pkg_add bison
             pkg_add mhash
@@ -256,6 +257,7 @@ jobs:
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
+            ./create_certificate --environment local
       - name: Setup ssl certificates
         shell: netbsd {0}
         run: $GITHUB_WORKSPACE/create_certificate --environment local
