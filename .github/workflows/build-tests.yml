@@ -201,10 +201,10 @@ jobs:
       - run: rsync -av ./ openbsd:./build/
       - name: Setup ssl certificates
         shell: openbsd {0}
-        run: cd build && ls -l && /build/create_certificate --environment local
+        run: cd build && ls -l && bash /build/create_certificate --environment local
       - name: Initialize test data
         shell: openbsd {0}
-        run: cd build && cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
+        run: cd build && cd unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
 
   build-test-freebsd:
     runs-on: ubuntu-latest
@@ -228,11 +228,11 @@ jobs:
             make install
       - name: Setup ssl certificates
         shell: freebsd {0}
-        run: cd $GITHUB_WORKSPACE; ./create_certificate --environment local
+        run: cd $GITHUB_WORKSPACE; bash ./create_certificate --environment local
       - name: Initialize test data
         shell: freebsd {0}
         run: |
-          cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
+          cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
 
   build-test-netbsd:
     runs-on: ubuntu-latest
@@ -254,10 +254,10 @@ jobs:
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
-            ./create_certificate --environment local
+            bash ./create_certificate --environment local
       - name: Setup ssl certificates
         shell: netbsd {0}
         run: $GITHUB_WORKSPACE/create_certificate --environment local
       - name: Initialize test data
         shell: netbsd {0}
-        run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
+        run: cd $GITHUB_WORKSPACE; cd unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
