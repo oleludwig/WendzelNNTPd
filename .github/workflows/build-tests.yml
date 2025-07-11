@@ -210,10 +210,10 @@ jobs:
       - name: run wendzelnntpd
         shell: openbsd {0}
         run: wendzelnntpd -d > /dev/null 2> /dev/null &
+      - name: get vm ipv4
+        run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat -4 openbsd 119 -w 1
-      - name: Smoketest IPv6
-        run: netcat -6 openbsd 119 -w 1
 
   build-test-freebsd:
     runs-on: ubuntu-latest
@@ -244,10 +244,10 @@ jobs:
       - name: run wendzelnntpd
         shell: freebsd {0}
         run: wendzelnntpd -d > /dev/null 2> /dev/null &
+      - name: get vm ipv4
+        run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat -4 freebsd 119 -w 1
-      - name: Smoketest IPv6
-        run: netcat -6 freebsd 119 -w 1
 
   build-test-netbsd:
     runs-on: ubuntu-latest
@@ -281,13 +281,10 @@ jobs:
       - name: Initialize test data
         shell: netbsd {0}
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
-      - name: run /usr/local/sbin/wendzelnntpd
+      - name: run wendzelnntpd
         shell: netbsd {0}
         run: /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
-      - run: sudo virsh net-dhcp-leases default
       - name: get vm ipv4
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
-#      - name: Smoketest IPv6
-#        run: netcat ${{ env.ipv6 }} 119 -w 1
