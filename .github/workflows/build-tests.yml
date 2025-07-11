@@ -269,9 +269,12 @@ jobs:
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
-      - run: >
+      - run: |
           cat /home/runner/.local/bin/netbsd
+          ls -l /home/runner/.ssh/
+          ls -l /home/runner/.ssh/config.d/
           cat /home/runner/.ssh/config
+          cat /home/runner/.ssh/config.d/*
       - name: Setup ssl certificates
         shell: netbsd {0}
         run: cd $GITHUB_WORKSPACE && bash ./create_certificate --environment local
