@@ -285,7 +285,7 @@ jobs:
         shell: netbsd {0}
         run: /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: get vm ipv4
-        run: echo "ipv4=$(virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
+        run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
 #      - name: Smoketest IPv6
