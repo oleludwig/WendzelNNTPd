@@ -214,6 +214,8 @@ jobs:
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
+      - name: expect tests IPv4
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
 
   build-test-freebsd:
     runs-on: ubuntu-latest
@@ -248,6 +250,8 @@ jobs:
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
+      - name: expect tests IPv4
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
 
   build-test-netbsd:
     runs-on: ubuntu-latest
@@ -288,3 +292,5 @@ jobs:
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
+      - name: expect tests IPv4
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
