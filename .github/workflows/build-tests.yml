@@ -209,7 +209,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
       - name: run wendzelnntpd
         shell: openbsd {0}
-        run: wendzelnntpd -d &
+        run: wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: Smoketest IPv4
         run: netcat -4 openbsd 119 -w 1
       - name: Smoketest IPv6
@@ -243,7 +243,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
       - name: run wendzelnntpd
         shell: freebsd {0}
-        run: wendzelnntpd -d &
+        run: wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: Smoketest IPv4
         run: netcat -4 freebsd 119 -w 1
       - name: Smoketest IPv6
@@ -277,7 +277,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
       - name: run /usr/local/sbin/wendzelnntpd
         shell: netbsd {0}
-        run: /usr/local/sbin/wendzelnntpd -d &
+        run: /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: Smoketest IPv4
         run: netcat -4 netbsd 119 -w 1
       - name: Smoketest IPv6
