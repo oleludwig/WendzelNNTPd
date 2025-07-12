@@ -301,6 +301,6 @@ jobs:
           GRANT SELECT, INSERT, UPDATE, DELETE ON WendzelNNTPd.* TO 'testuser'@'%'"
       - name: restart wendzelnntpd
         shell: vm {0}
-        run: pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d
+        run: pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
