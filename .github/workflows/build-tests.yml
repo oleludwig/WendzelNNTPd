@@ -205,7 +205,7 @@ jobs:
             pkg_add mariadb-client
             pkg_add postgresql-client
           run: |
-            cp unittesting/tls-testing/test-files/openssl.cnf /etc/openssl/openssl.cnf
+            cp unittesting/tls-testing/test-files/openssl.cnf /etc/ssl/openssl.cnf
             POSTGRES=YES ./configure
             make
             make install
