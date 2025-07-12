@@ -205,6 +205,7 @@ jobs:
             pkg_add mariadb-client
             pkg_add postgresql-client
           run: |
+            cp unittesting/tls-testing/test-files/openssl-client.cnf /etc/openssl/openssl.cnf
             POSTGRES=YES ./configure
             make
             make install
@@ -235,8 +236,8 @@ jobs:
             /usr/sbin/pkg_add mhash
             /usr/sbin/pkg_add mariadb-client
             /usr/sbin/pkg_add postgresql17-client
-            cp unittesting/tls-testing/test-files/openssl-client.cnf /etc/openssl/openssl.cnf
           run: |
+            cp unittesting/tls-testing/test-files/openssl-client.cnf /etc/openssl/openssl.cnf
             export PATH=/sbin:/usr/sbin:$PATH
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
             make
