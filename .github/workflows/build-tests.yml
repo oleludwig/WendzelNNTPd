@@ -252,6 +252,10 @@ jobs:
       - name: run wendzelnntpd
         shell: vm {0}
         run: /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
+      - name: Copy certificates from container to host
+        run: cd unittesting/tls-testing && mkdir tmp && scp ${{ matrix.distribution }}:/usr/local/etc/ssl/ca.crt tmp/ca-self.crt && scp ${{ matrix.distribution }}:/usr/local/etc/ssl/ca-key.pem tmp/ca-self.key
+      - name: Create client cert for mutual tls tests
+        run: cd unittesting/tls-testing && ./create-client-cert.sh
       - name: get vm ipv4
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
       - name: Smoketest IPv4
