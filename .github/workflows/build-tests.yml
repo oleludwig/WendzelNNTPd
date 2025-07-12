@@ -272,7 +272,7 @@ jobs:
       - name: reset config and switch to mysql database
         shell: vm {0}
         run: >
-          cd unittesting/tls-testing
+          cd $GITHUB_WORKSPACE/unittesting/tls-testing
           && cp test-files/wendzelnntpd.conf /usr/local/etc/
           && sed -i 's/^database-engine sqlite3$/database-engine mysql/' /usr/local/etc/wendzelnntpd.conf
           && sed -i 's/^database-server 127.0.0.1$/database-server mariadb/' /usr/local/etc/wendzelnntpd.conf
