@@ -322,7 +322,7 @@ jobs:
       - name: reset config and switch to postgresql database
         shell: vm {0}
         run: >
-          docker exec testcontainer bash -c "cd unittesting/tls-testing
+          cd $GITHUB_WORKSPACE/unittesting/tls-testing
           && cp test-files/wendzelnntpd.conf /usr/local/etc/
           && sed 's/^database-engine sqlite3$/database-engine postgres/' /usr/local/etc/wendzelnntpd.conf > temp
           && mv temp /usr/local/etc/wendzelnntpd.conf
