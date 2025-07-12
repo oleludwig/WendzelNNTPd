@@ -264,3 +264,8 @@ jobs:
         run: netcat ${{ env.ipv4 }} 119 -w 1
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
+      - name: Enable mandatory tls
+        shell: vm {0}
+        run: echo \"tls-is-mandatory\" >> /usr/local/etc/wendzelnntpd.conf && pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d
+      - name: expect test for mandatory tls
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} expect tests/special/nntp-mandatory-tls-test.exp
