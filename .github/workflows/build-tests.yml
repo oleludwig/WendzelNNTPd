@@ -273,20 +273,16 @@ jobs:
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
             make
             make install
-      - run: |
-          cat /home/runner/.local/bin/netbsd
-          ls -l /home/runner/.ssh/
-          ls -l /home/runner/.ssh/config.d/
-          cat /home/runner/.ssh/config
-          cat /home/runner/.ssh/config.d/*
+      - name: Link vm shell script
+        run: ln -s /home/runner/.local/bin/netbsd /home/runner/.local/bin/vm
       - name: Setup ssl certificates
-        shell: netbsd {0}
+        shell: vm {0}
         run: cd $GITHUB_WORKSPACE && bash ./create_certificate --environment local
       - name: Initialize test data
-        shell: netbsd {0}
+        shell: vm {0}
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
       - name: run wendzelnntpd
-        shell: netbsd {0}
+        shell: vm {0}
         run: /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: get vm ipv4
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
