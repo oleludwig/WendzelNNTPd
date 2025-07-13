@@ -298,6 +298,10 @@ jobs:
         run: cd unittesting/tls-testing && ./create-client-cert.sh
       - name: get vm ipv4
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
+      - name: get container ipv6
+        run: |
+          IPV6=$(ssh ${{ matrix.distribution }} '/sbin/ifconfig | awk "/inet6 / && !/fe80/ && !/::1/ { print \$2; exit }"')
+          echo "ipv6=$(IPV6%/64)" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
       - name: expect tests IPv4
