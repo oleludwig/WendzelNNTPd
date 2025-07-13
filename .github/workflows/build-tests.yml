@@ -223,6 +223,15 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v4
+      - name: Install test tools
+        run: sudo apt-get update -y && sudo apt-get install -y netcat-openbsd expect mariadb-client postgresql-client libvirt-daemon-system
+      - name: Configure IPv6
+        run: |
+          virsh net-dumpxml default > default.xml.dump
+          sed "s/<\/network>/<ip family='ipv6' address='fdf3:6058:2cb3::1' prefix='48' \/><\/network>/" default.xml.dump > default.xml
+          virsh net-destroy default
+          virsh net-define --file default.xml
+          virsh net-start default
       - name: Start OpenBSD VM and build and install wendzelnntpd
         uses: vmactions/openbsd-vm@v1
         with:
