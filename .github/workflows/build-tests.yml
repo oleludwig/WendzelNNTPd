@@ -237,9 +237,7 @@ jobs:
         with:
           usesh: true
           prepare: |
-            ifconfig
             ifconfig em0 inet6 autoconf
-            ifconfig
             pkg_add bash
             pkg_add bison
             pkg_add mhash
