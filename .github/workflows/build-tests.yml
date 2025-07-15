@@ -269,6 +269,9 @@ jobs:
         with:
           usesh: true
           prepare: |
+            echo "ip6addrctl=YES" >> /etc/rc.conf
+            echo "ip6addrctl_policy=ipv4_prefer" >> /etc/rc.conf
+            service ip6addrctl restart
             /usr/sbin/pkg_add bash
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
@@ -298,7 +301,6 @@ jobs:
         run: cd unittesting/tls-testing && ./create-client-cert.sh
       - name: get vm ipv4
         run: echo "ipv4=$(sudo virsh net-dhcp-leases default | grep ipv4 | tail -1 | grep -o -E '192.168.[0-9]*.[0-9]*')" >> $GITHUB_ENV
-      - run: ssh ${{ matrix.distribution }} '/sbin/ifconfig'
       - name: get container ipv6
         run: |
           IPV6=$(ssh ${{ matrix.distribution }} '/sbin/ifconfig | awk "/inet6 / && !/fe80/ && !/::1/ { print \$2; exit }"')
