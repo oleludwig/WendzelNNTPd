@@ -307,8 +307,12 @@ jobs:
           echo "ipv6=${IPV6%/64}" >> $GITHUB_ENV
       - name: Smoketest IPv4
         run: netcat ${{ env.ipv4 }} 119 -w 1
+      - name: Smoketest IPv6
+        run: netcat ${{ env.ipv6 }} 119 -w 1
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
+      - name: expect tests IPv6
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
       - name: Enable mandatory tls
         shell: vm {0}
         run: echo \"tls-is-mandatory\" >> /usr/local/etc/wendzelnntpd.conf && pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
@@ -335,6 +339,8 @@ jobs:
         run: pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
+      - name: expect tests IPv6
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
       - name: reset config and switch to postgresql database
         shell: vm {0}
         run: >
@@ -354,3 +360,5 @@ jobs:
         run: pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
+      - name: expect tests IPv6
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
