@@ -271,7 +271,7 @@ jobs:
           prepare: |
             echo "ip6addrctl=YES" >> /etc/rc.conf
             echo "ip6addrctl_policy=ipv4_prefer" >> /etc/rc.conf
-            service ip6addrctl restart
+            /usr/sbin/service ip6addrctl restart
             /usr/sbin/pkg_add bash
             /usr/sbin/pkg_add bison
             /usr/sbin/pkg_add mhash
