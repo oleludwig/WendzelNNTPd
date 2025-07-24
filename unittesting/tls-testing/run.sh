@@ -1,7 +1,22 @@
 error=0
-for file in *.exp
+results=()
+
+nntp_address="${nntp_address:-localhost}"
+
+for file in tests/*.exp
 do
-    expect $file || error=1
+    echo "Run test $file"
+    nntp_address=$nntp_address expect $file
+    result=$?
+    if [ $result -ne 0 ]
+    then
+        error=1
+    fi
+    results+=("$file: $result")
+    echo ""
 done
+
+echo "Test results in the format <filename>: <returncode>"
+printf '%s\n' "${results[@]}"
 
 exit $error
