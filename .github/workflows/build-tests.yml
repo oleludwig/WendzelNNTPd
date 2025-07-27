@@ -111,7 +111,7 @@ jobs:
           "sed -i 's/ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d/c336f7d5bab8ccf4860fc53cb33290bb794d481590db02c0936fbaa74099c77d/' unittesting/tls-testing/create_db_test_data.sql"
         if: ${{ !(matrix.platform == 'linux/amd64' || matrix.platform == 'linux/386') }}
       - name: configure
-        run: docker exec testcontainer bash -c "POSTGRES=YES ./configure"
+        run: docker exec testcontainer bash -c "./configure --enable-postgres"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
@@ -244,7 +244,7 @@ jobs:
             pkg_add postgresql-client
           run: |
             cp unittesting/tls-testing/test-files/openssl.cnf /etc/ssl/openssl.cnf
-            POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
             make
             make install
         if: ${{ matrix.distribution == 'openbsd' }}
@@ -260,7 +260,7 @@ jobs:
             pkg install -y mariadb114-client
             pkg install -y postgresql17-client
           run: |
-            POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
             make
             make install
         if: ${{ matrix.distribution == 'freebsd' }}
@@ -281,7 +281,7 @@ jobs:
           run: |
             cp unittesting/tls-testing/test-files/openssl.cnf /etc/openssl/openssl.cnf
             export PATH=/sbin:/usr/sbin:$PATH
-            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/pkg/include" LDFLAGS="-L/usr/pkg/lib -Wl,-R/usr/pkg/lib" 
             make
             make install
         if: ${{ matrix.distribution == 'netbsd' }}
