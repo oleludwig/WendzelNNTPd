@@ -30,4 +30,4 @@ INSERT INTO ngposts (msgid, ng, postnum) VALUES ('<cdp1@localhost>', 'alt.wendze
 INSERT INTO ngposts (msgid, ng, postnum) VALUES ('<cdp2@localhost>', 'alt.wendzelnntpd.test', 2);
 
 -- create user with name "testuser" and password "password"
-INSERT INTO users (name, password) VALUES ('testuser', 'ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d');
+INSERT INTO users (name, password) VALUES ('testuser', '1c039cb73df5bad8a0fe7711e2447c2b72c8d9ff8dc53d75d201aa9491fc1756');
