@@ -96,7 +96,7 @@ jobs:
           gcc flex bison sqlite mariadb-libs ca-certificates mhash make openssl postgresql-libs procps-ng"
         if: ${{ matrix.image == 'archlinux:latest' }}
       - name: configure
-        run: docker exec testcontainer bash -c "./configure --enable-postgres CFLAGS=-g\ -Og"
+        run: docker exec testcontainer bash -c "./configure --enable-postgres CFLAGS=-fsanitize\=address\ -g\ -O2"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
@@ -166,13 +166,13 @@ jobs:
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
-        if: ${{ failure() }}
+        if: ${{ always() }}
       - run: docker cp testcontainer:/tmp/ /tmp/
-        if: ${{ failure() }}
+        if: ${{ always() }}
       - run: docker cp testcontainer:/usr/local/sbin/wendzelnntpd /tmp/tmp/
-        if: ${{ failure() }}
+        if: ${{ always() }}
       - uses: actions/upload-artifact@v4
-        if: ${{ failure() }}  # Run only if something went wrong
+        if: ${{ always() }}
         with:
           name: cores
           path: /tmp/tmp/
