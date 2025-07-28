@@ -69,9 +69,7 @@ jobs:
             ${{ matrix.image }} \
             /bin/sh
       - name: Core Dump
-        run: |
-          ulimit -c unlimited
-          echo '/tmp/core.%h.%e.%t' > /proc/sys/kernel/core_pattern
+        run: docker exec testcontainer bash -c "ulimit -c unlimited; echo '/tmp/core.%h.%e.%t' > /proc/sys/kernel/core_pattern"
       - name: Connect container to the docker network with the databases
         run: docker network connect $(docker network ls -f name=github_network --format "{{.ID}}") testcontainer
       - name: Install dependencies with apt
@@ -169,13 +167,13 @@ jobs:
         run: docker stop testcontainer -t 1
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
         if: ${{ failure() }}
-      - run: docker cp testcontainer:/tmp/ /core/
+      - run: docker cp testcontainer:/tmp/ /tmp/
         if: ${{ failure() }}
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}  # Run only if something went wrong
         with:
           name: cores
-          path: /tmp/core/
+          path: /tmp/tmp/
 
   build-test-bsd:
     if: false
