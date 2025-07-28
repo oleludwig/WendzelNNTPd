@@ -96,7 +96,7 @@ jobs:
           gcc flex bison sqlite mariadb-libs ca-certificates mhash make openssl postgresql-libs procps-ng"
         if: ${{ matrix.image == 'archlinux:latest' }}
       - name: configure
-        run: docker exec testcontainer bash -c "./configure --enable-postgres CFLAGS=-fsanitize\=address\ -g\ -O2"
+        run: docker exec testcontainer bash -c "./configure --enable-postgres CFLAGS=-fsanitize\=address\ -g"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
