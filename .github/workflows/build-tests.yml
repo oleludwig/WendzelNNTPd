@@ -120,7 +120,7 @@ jobs:
       - name: expect tests IPv4
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
       - name: expect tests IPv6
-        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
+        run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh; cat /var/log/wendzelnntpd
       - name: Enable mandatory tls
         run: docker exec testcontainer bash -c "echo \"tls-is-mandatory\" >> /usr/local/etc/wendzelnntpd.conf && pkill -9 wendzelnntpd && wendzelnntpd -d"
       - name: expect test for mandatory tls
