@@ -164,13 +164,13 @@ jobs:
       - name: expect tests IPv6
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
-        if: ${{ always() }}
+        if: ${{ failure() }}
       - run: docker cp testcontainer:/tmp/ /tmp/
-        if: ${{ always() }}
+        if: ${{ failure() }}
       - run: docker cp testcontainer:/usr/local/sbin/wendzelnntpd /tmp/tmp/
-        if: ${{ always() }}
+        if: ${{ failure() }}
       - uses: actions/upload-artifact@v4
-        if: ${{ always() }}
+        if: ${{ failure() }}
         with:
           name: cores
           path: /tmp/tmp/
