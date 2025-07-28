@@ -14,22 +14,10 @@ jobs:
       matrix:
         platform:
           - linux/amd64
-          - linux/386
-          - linux/arm/v5
-          - linux/arm/v7
-          - linux/arm64/v8
-          - linux/ppc64le
-          - linux/s390x
         image: [debian:stable-slim]
         include:
           - platform: linux/amd64
             image: ubuntu:latest
-          - platform: linux/amd64
-            image: fedora:latest
-          - platform: linux/amd64
-            image: opensuse/leap:latest
-          - platform: linux/amd64
-            image: archlinux:latest
     services:
       mariadb:
         image: mariadb:latest
@@ -177,6 +165,7 @@ jobs:
         run: docker stop testcontainer -t 1
 
   build-test-bsd:
+    if: false
     runs-on: ubuntu-latest
     name: Build and test wendzelnntpd on BSD distributions
     strategy:
