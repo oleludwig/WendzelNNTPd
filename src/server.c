@@ -1115,6 +1115,7 @@ docmd_post(server_cb_inf *inf)
 					 * performs an ordinary shutdown.
 					 */
 					perror("Client disconnected in docmd_post()");
+					DO_SYSL("Client disconnected in docmd_post()");
 					free(buf);
 					kill_thread(inf);
 					/* NOTREACHED */
@@ -1582,6 +1583,7 @@ do_command(char *recvbuf, server_cb_inf *inf)
 	/* Check "AAAA" before "AAA" to make sure we match the correct command here! */
 	if (QUESTION("quit", 4)) {
 		Send(inf->sockinf, quitstring, strlen(quitstring));
+		DO_SYSL("xxx quit")
 		kill_thread(inf);
 		/* NOTREACHED */
 	} else if (QUESTION("authinfo user ", 14)) {
@@ -1695,6 +1697,7 @@ do_server(void *socket_info_ptr)
 		 * with crappy clients who send multiple requests within one request. */
 		/* 1. kill connection if the client sends more bytes than allowed */
 		if (len == MAX_CMDLEN) {
+			DO_SYSL("xxx MAXCMDLEN")
 			kill_thread(&inf);
 		}
 
@@ -1733,6 +1736,7 @@ do_server(void *socket_info_ptr)
 		return_val = Receive(sockinf, recvbuf+len, 1);
 		if (return_val <= 0) {
 			/* kill connection in problem case */
+			DO_SYSL("xxx return_val")
 			kill_thread(&inf);
 			/* NOTREACHED */
 		}
@@ -1770,6 +1774,7 @@ do_server(void *socket_info_ptr)
 		}
 	}
 	/* NOTREACHED */
+	DO_SYSL("xxx notreached")
 	kill_thread(&inf);
 	/* NOTREACHED */
 	return NULL;
