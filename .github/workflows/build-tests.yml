@@ -169,6 +169,8 @@ jobs:
         if: ${{ failure() }}
       - run: docker cp testcontainer:/tmp/ /tmp/
         if: ${{ failure() }}
+      - run: docker cp testcontainer:/usr/local/sbin/wendzelnntpd /tmp/tmp/
+        if: ${{ failure() }}
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}  # Run only if something went wrong
         with:
