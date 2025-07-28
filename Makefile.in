@@ -81,16 +81,16 @@ log.o : $(SRC)/log.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 libfunc.o : $(SRC)/libfunc.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 acl.o : $(SRC)/acl.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 db_abstraction.o : $(SRC)/db_abstraction.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 db_sqlite3.o : $(SRC)/db_sqlite3.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 db_postgres.o : $(SRC)/db_postgres.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
@@ -102,13 +102,13 @@ cdpstrings.o : $(SRC)/cdpstrings.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 server.o : $(SRC)/server.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 hash.o : $(SRC)/hash.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 charstack.o : $(SRC)/charstack.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 globals.o : $(SRC)/globals.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
