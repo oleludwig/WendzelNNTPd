@@ -163,8 +163,6 @@ jobs:
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
       - name: expect tests IPv6
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
-      - name: Stop Docker container
-        run: docker stop testcontainer -t 1
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
         if: ${{ always() }}
       - run: docker cp testcontainer:/tmp/ /tmp/
@@ -176,6 +174,8 @@ jobs:
         with:
           name: cores
           path: /tmp/tmp/
+      - name: Stop Docker container
+        run: docker stop testcontainer -t 1
 
   build-test-bsd:
     if: false
