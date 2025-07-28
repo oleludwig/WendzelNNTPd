@@ -501,7 +501,8 @@ static void
 docmd_xhdr(char *cmdstring, server_cb_inf *inf)
 {
 	short req_message_id = 0;
-	u_int32_t min, max;
+	u_int32_t min = 0;
+	u_int32_t max = 0;
 	u_int32_t REALmax;
 	char *ptr;
 	short xhdr_part;
@@ -1419,9 +1420,9 @@ docmd_post(server_cb_inf *inf)
 		char unknown[] = "unknown\0";
 
 		if (gethostname(hostname, 127) == 0) {
-			strncpy(fqdn, hostname, strlen(hostname));
+			strncpy(fqdn, hostname, strlen(hostname + 1));
 		} else {
-			strncpy(fqdn, unknown, strlen(unknown));
+			strncpy(fqdn, unknown, strlen(unknown + 1));
 		}
 		/* now also get the domain name */
 #ifdef __WIN32__ /* ... but not on Win32 */
@@ -1430,10 +1431,10 @@ docmd_post(server_cb_inf *inf)
 #else /* okay, here we really get the domain name */
 		if (getdomainname(domainname, 127) == 0 && strncmp(domainname, "(none)", 6) != 0) {
 			fqdn[strlen(fqdn)] = '.';
-			strncpy(fqdn + strlen(fqdn), domainname, 127);
+			strncpy(fqdn + strlen(fqdn), domainname, 128);
 		} else {
 			fqdn[strlen(fqdn)] = '.';
-			strncpy(fqdn + strlen(fqdn), unknown, strlen(unknown));
+			strncpy(fqdn + strlen(fqdn), unknown, strlen(unknown+1));
 		}
 #endif
 		/* Add FQDN + other important headers */
