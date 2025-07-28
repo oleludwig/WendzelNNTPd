@@ -87,10 +87,10 @@ acl.o : $(SRC)/acl.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 db_abstraction.o : $(SRC)/db_abstraction.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 db_sqlite3.o : $(SRC)/db_sqlite3.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 db_postgres.o : $(SRC)/db_postgres.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
