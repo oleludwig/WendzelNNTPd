@@ -75,13 +75,13 @@ database.o : $(SRC)/database.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 main.o : $(SRC)/main.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 log.o : $(SRC)/log.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 libfunc.o : $(SRC)/libfunc.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 acl.o : $(SRC)/acl.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
