@@ -102,7 +102,7 @@ cdpstrings.o : $(SRC)/cdpstrings.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 server.o : $(SRC)/server.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 hash.o : $(SRC)/hash.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
