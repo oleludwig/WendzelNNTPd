@@ -501,8 +501,7 @@ static void
 docmd_xhdr(char *cmdstring, server_cb_inf *inf)
 {
 	short req_message_id = 0;
-	u_int32_t min = 0;
-	u_int32_t max = 0;
+	u_int32_t min, max;
 	u_int32_t REALmax;
 	char *ptr;
 	short xhdr_part;
@@ -1116,7 +1115,6 @@ docmd_post(server_cb_inf *inf)
 					 * performs an ordinary shutdown.
 					 */
 					perror("Client disconnected in docmd_post()");
-					DO_SYSL("Client disconnected in docmd_post()");
 					free(buf);
 					kill_thread(inf);
 					/* NOTREACHED */
@@ -1420,9 +1418,9 @@ docmd_post(server_cb_inf *inf)
 		char unknown[] = "unknown\0";
 
 		if (gethostname(hostname, 127) == 0) {
-			strncpy(fqdn, hostname, strlen(hostname + 1));
+			strncpy(fqdn, hostname, strlen(hostname));
 		} else {
-			strncpy(fqdn, unknown, strlen(unknown + 1));
+			strncpy(fqdn, unknown, strlen(unknown));
 		}
 		/* now also get the domain name */
 #ifdef __WIN32__ /* ... but not on Win32 */
@@ -1431,10 +1429,10 @@ docmd_post(server_cb_inf *inf)
 #else /* okay, here we really get the domain name */
 		if (getdomainname(domainname, 127) == 0 && strncmp(domainname, "(none)", 6) != 0) {
 			fqdn[strlen(fqdn)] = '.';
-			strncpy(fqdn + strlen(fqdn), domainname, 128);
+			strncpy(fqdn + strlen(fqdn), domainname, 127);
 		} else {
 			fqdn[strlen(fqdn)] = '.';
-			strncpy(fqdn + strlen(fqdn), unknown, strlen(unknown+1));
+			strncpy(fqdn + strlen(fqdn), unknown, strlen(unknown));
 		}
 #endif
 		/* Add FQDN + other important headers */
@@ -1584,7 +1582,6 @@ do_command(char *recvbuf, server_cb_inf *inf)
 	/* Check "AAAA" before "AAA" to make sure we match the correct command here! */
 	if (QUESTION("quit", 4)) {
 		Send(inf->sockinf, quitstring, strlen(quitstring));
-		DO_SYSL("xxx quit")
 		kill_thread(inf);
 		/* NOTREACHED */
 	} else if (QUESTION("authinfo user ", 14)) {
@@ -1698,7 +1695,6 @@ do_server(void *socket_info_ptr)
 		 * with crappy clients who send multiple requests within one request. */
 		/* 1. kill connection if the client sends more bytes than allowed */
 		if (len == MAX_CMDLEN) {
-			DO_SYSL("xxx MAXCMDLEN")
 			kill_thread(&inf);
 		}
 
@@ -1737,7 +1733,6 @@ do_server(void *socket_info_ptr)
 		return_val = Receive(sockinf, recvbuf+len, 1);
 		if (return_val <= 0) {
 			/* kill connection in problem case */
-			DO_SYSL("xxx return_val")
 			kill_thread(&inf);
 			/* NOTREACHED */
 		}
@@ -1775,7 +1770,6 @@ do_server(void *socket_info_ptr)
 		}
 	}
 	/* NOTREACHED */
-	DO_SYSL("xxx notreached")
 	kill_thread(&inf);
 	/* NOTREACHED */
 	return NULL;

@@ -140,8 +140,8 @@ main(int argc, char *argv[])
 	sig_a.sa_sigaction=&signal_action_handler;
 	sig_a.sa_flags=SA_SIGINFO;
 	for (i = 1; i < 32; i++) {
-		if ((i != SIGKILL) && (i != SIGSTOP) && (i != SIGABRT))     //Handler except SIGKILL and SIGSTOP
-			sigaction(i,&sig_a,NULL);        		//Handler for all other signals
+		if ((i != SIGKILL) && (i != SIGSTOP))     //Handler except SIGKILL and SIGSTOP
+			sigaction(i,&sig_a,NULL);        		//Handler for all other signals 
 	}
 
 	/* 41 - 5a = upper case -> + 0x20 = lower case */

@@ -64,12 +64,10 @@ jobs:
             -v $(pwd):${{ github.workspace }} \
             -w ${{ github.workspace }} \
             --platform ${{ matrix.platform }} \
-            --name testcontainer --privileged --ulimit core=-1 --security-opt seccomp=unconfined\
+            --name testcontainer \
             -d -it \
             ${{ matrix.image }} \
             /bin/sh
-      - name: Core Dump
-        run: docker exec testcontainer bash -c "ulimit -c unlimited; echo '/tmp/core.%h.%e.%t' > /proc/sys/kernel/core_pattern"
       - name: Connect container to the docker network with the databases
         run: docker network connect $(docker network ls -f name=github_network --format "{{.ID}}") testcontainer
       - name: Install dependencies with apt
@@ -96,7 +94,7 @@ jobs:
           gcc flex bison sqlite mariadb-libs ca-certificates mhash make openssl postgresql-libs procps-ng"
         if: ${{ matrix.image == 'archlinux:latest' }}
       - name: configure
-        run: docker exec testcontainer bash -c "./configure --enable-postgres CFLAGS=-g\ -O2"
+        run: docker exec testcontainer bash -c "./configure --enable-postgres"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
@@ -163,17 +161,6 @@ jobs:
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} ./run.sh
       - name: expect tests IPv6
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv6 }} ./run.sh
-      - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
-        if: ${{ failure() }}
-      - run: docker cp testcontainer:/tmp/ /tmp/
-        if: ${{ failure() }}
-      - run: docker cp testcontainer:/usr/local/sbin/wendzelnntpd /tmp/tmp/
-        if: ${{ failure() }}
-      - uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: cores
-          path: /tmp/tmp/
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
 
