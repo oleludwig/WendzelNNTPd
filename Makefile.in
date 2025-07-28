@@ -90,7 +90,7 @@ db_abstraction.o : $(SRC)/db_abstraction.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 db_sqlite3.o : $(SRC)/db_sqlite3.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
 
 db_postgres.o : $(SRC)/db_postgres.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
@@ -108,7 +108,7 @@ hash.o : $(SRC)/hash.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 charstack.o : $(SRC)/charstack.c $(HEADERS)
-	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -O0 -c $<
+	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
 
 globals.o : $(SRC)/globals.c $(HEADERS)
 	$(CC) $(DEBUG) $(BUILD) $(CFLAGS) $(CPPFLAGS) -c $<
