@@ -173,7 +173,7 @@ jobs:
         if: ${{ failure() }}  # Run only if something went wrong
         with:
           name: cores
-          path: /tmp
+          path: /tmp/core*
 
   build-test-bsd:
     if: false
