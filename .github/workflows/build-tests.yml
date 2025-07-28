@@ -64,10 +64,14 @@ jobs:
             -v $(pwd):${{ github.workspace }} \
             -w ${{ github.workspace }} \
             --platform ${{ matrix.platform }} \
-            --name testcontainer \
+            --name testcontainer --privileged --ulimit core=-1 --security-opt seccomp=unconfined\
             -d -it \
             ${{ matrix.image }} \
             /bin/sh
+      - name: Core Dump
+        run: |
+          ulimit -c unlimited
+          echo '/tmp/core.%h.%e.%t' > /proc/sys/kernel/core_pattern
       - name: Connect container to the docker network with the databases
         run: docker network connect $(docker network ls -f name=github_network --format "{{.ID}}") testcontainer
       - name: Install dependencies with apt
@@ -164,7 +168,12 @@ jobs:
       - name: Stop Docker container
         run: docker stop testcontainer -t 1
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
-        if: ${{ always() }}
+        if: ${{ failure() }}
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}  # Run only if something went wrong
+        with:
+          name: cores
+          path: /tmp
 
   build-test-bsd:
     if: false
