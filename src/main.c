@@ -136,13 +136,13 @@ main(int argc, char *argv[])
 	basic_setup_server();
 
 	/* signal handling - for all signals*/
-//	memset(&sig_a,0,sizeof(sig_a));
-//	sig_a.sa_sigaction=&signal_action_handler;
-//	sig_a.sa_flags=SA_SIGINFO;
-//	for (i = 1; i < 32; i++) {
-//		if ((i != SIGKILL) && (i != SIGSTOP))     //Handler except SIGKILL and SIGSTOP
-//			sigaction(i,&sig_a,NULL);        		//Handler for all other signals
-//	}
+	memset(&sig_a,0,sizeof(sig_a));
+	sig_a.sa_sigaction=&signal_action_handler;
+	sig_a.sa_flags=SA_SIGINFO;
+	for (i = 1; i < 32; i++) {
+		if ((i != SIGKILL) && (i != SIGSTOP) && (i != SIGABRT))     //Handler except SIGKILL and SIGSTOP
+			sigaction(i,&sig_a,NULL);        		//Handler for all other signals
+	}
 
 	/* 41 - 5a = upper case -> + 0x20 = lower case */
 	for (i = 0; i < 256; i++) {
