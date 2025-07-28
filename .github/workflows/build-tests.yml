@@ -169,11 +169,13 @@ jobs:
         run: docker stop testcontainer -t 1
       - run: docker exec testcontainer bash -c "cat /var/log/wendzelnntpd"
         if: ${{ failure() }}
+      - run: docker cp testcontainer:/tmp/ /core/
+        if: ${{ failure() }}
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}  # Run only if something went wrong
         with:
           name: cores
-          path: /tmp/core*
+          path: /tmp/core/
 
   build-test-bsd:
     if: false
