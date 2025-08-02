@@ -244,7 +244,7 @@ jobs:
             pkg_add postgresql-client
           run: |
             cp unittesting/tls-testing/test-files/openssl.cnf /etc/ssl/openssl.cnf
-            POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
             make
             make install
         if: ${{ matrix.distribution == 'openbsd' }}
