@@ -193,7 +193,6 @@ jobs:
         run: docker stop testcontainer -t 1
 
   build-test-bsd:
-    if: false
     runs-on: ubuntu-latest
     name: Build and test wendzelnntpd on BSD distributions
     strategy:
