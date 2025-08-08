@@ -153,6 +153,8 @@ jobs:
         run: docker exec testcontainer bash -c "pkill -9 wendzelnntpd && wendzelnntpd -d"
       - name: expect test for acl
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} expect tests/special/nntp-acl-test.exp
+      - name: Test wendzelnntpadm
+        run: docker exec testcontainer bash -c "cd unittesting/tls-testing && ./test_wendzelnntpadm.sh"
       - name: reset config and switch to mysql database
         run: >
           docker exec testcontainer bash -c "cd unittesting/tls-testing
@@ -345,6 +347,9 @@ jobs:
         run: pkill -9 wendzelnntpd && /usr/local/sbin/wendzelnntpd -d > /dev/null 2> /dev/null &
       - name: expect test for acl
         run: cd unittesting/tls-testing && nntp_address=${{ env.ipv4 }} expect tests/special/nntp-acl-test.exp
+      - name: Test wendzelnntpadm
+        shell: vm {0}
+        run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && ./test_wendzelnntpadm.sh
       - name: reset config and switch to mysql database
         shell: vm {0}
         run: >
