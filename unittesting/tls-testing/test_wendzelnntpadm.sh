@@ -140,10 +140,62 @@ returncode=$?
 check_returncode $returncode 1 "$output"
 check_output "$output" "Newsgroup invalid does not exists."
 
+echo "== Test listusers command =="
+output=$(wendzelnntpadm listusers 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Username, Password"
+check_output "$output" "------------------"
+check_output "$output" "testuser, ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d"
+check_output "$output" "testuser2, ffffff3cffff151050ffff1cff1807ffff777cffffffff11ff67ff65ffff315c"
+check_output "$output" "done."
+
+echo "== Test adduser command =="
+output=$(wendzelnntpadm adduser newuser password 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "User newuser does currently not exist: okay."
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listusers 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Username, Password"
+check_output "$output" "------------------"
+check_output "$output" "testuser, ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d"
+check_output "$output" "testuser2, ffffff3cffff151050ffff1cff1807ffff777cffffffff11ff67ff65ffff315c"
+check_output "$output" "newuser, ffff6aff20342e7166ff3479ff1e0014ff5358ffffffff645c1f6076ff61fffff"
+check_output "$output" "done."
+
+echo "== Test adduser command but user already exists =="
+output=$(wendzelnntpadm adduser newuser password 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User newuser does already exists."
+
+echo "== Test deluser command for existing user =="
+output=$(wendzelnntpadm deluser newuser y 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "User newuser exists: okay."
+check_output "$output" "Clearing ACL associations of user newuser... done"
+check_output "$output" "Clearing ACL role associations of user newuser... done"
+check_output "$output" "Deleting user newuser from database ... done"
+check_output "$output" "done."
+
+echo "== Test deluser command for non existing user =="
+output=$(wendzelnntpadm deluser invalid y 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User invalid does not exists."
+
 #TODO
-#listusers
-#adduser
-#deluser
 #listacl
 #addacluser
 #delacluser
