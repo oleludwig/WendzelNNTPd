@@ -140,8 +140,6 @@ returncode=$?
 check_returncode $returncode 1 "$output"
 check_output "$output" "Newsgroup invalid does not exists."
 
-
-output=$(wendzelnntpadm delgroup alt.wendzelnntpd.test 2>&1)
 #TODO
 #listusers
 #adduser
