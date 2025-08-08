@@ -313,7 +313,7 @@ jobs:
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh && cp test-files/wendzelnntpd.conf /usr/local/etc/
       - name: Test wendzelnntpadm
         shell: vm {0}
-        run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && PATH=/sbin:/usr/sbin:$PATH ./test_wendzelnntpadm.sh
+        run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && PATH=/usr/local/sbin:$PATH ./test_wendzelnntpadm.sh
       - name: Reinitialize database
         shell: vm {0}
         run: cd $GITHUB_WORKSPACE/unittesting/tls-testing && bash ./initialize_db.sh
