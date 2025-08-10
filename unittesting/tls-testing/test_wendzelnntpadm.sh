@@ -188,6 +188,16 @@ check_output "$output" "Clearing ACL role associations of user newuser... done"
 check_output "$output" "Deleting user newuser from database ... done"
 check_output "$output" "done."
 
+output=$(wendzelnntpadm listusers 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Username, Password"
+check_output "$output" "------------------"
+check_output "$output" "testuser, ff36ffffffffffffff0fff3cff32ffff794d4815ffff02ffff6fffff40ffff7d"
+check_output "$output" "testuser2, ffffff3cffff151050ffff1cff1807ffff777cffffffff11ff67ff65ffff315c"
+check_output "$output" "done."
+
 echo "== Test deluser command for non existing user =="
 output=$(wendzelnntpadm deluser invalid y 2>&1)
 returncode=$?
@@ -195,13 +205,377 @@ returncode=$?
 check_returncode $returncode 1 "$output"
 check_output "$output" "User invalid does not exists."
 
-#TODO
-#listacl
-#addacluser
-#delacluser
-#addaclrole
-#delaclrole
-#rolegroupconnect
-#rolegroupdisconnect
-#roleuserconnect
-#roleuserdisconnect
+echo "== Test listacl command =="
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test addacluser command =="
+output=$(wendzelnntpadm addacluser testuser alt.wendzelnntpd.test.post 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "User testuser exists: okay"
+check_output "$output" "Newsgroup alt.wendzelnntpd.test.post exists: okay"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "testuser, alt.wendzelnntpd.test.post"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test addacluser command but newsgroup does not exist =="
+output=$(wendzelnntpadm addacluser testuser invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User testuser exists: okay"
+check_output "$output" "Newsgroup invalid does not exists."
+
+echo "== Test addacluser command but user does not exist =="
+output=$(wendzelnntpadm addacluser invalid alt.wendzelnntpd.test.post 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User invalid does not exists."
+
+echo "== Test delacluser command for existing user and newsgroup =="
+output=$(wendzelnntpadm delacluser testuser alt.wendzelnntpd.test.post 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "User testuser exists: okay"
+check_output "$output" "Newsgroup alt.wendzelnntpd.test.post exists: okay."
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test delacluser command but newsgroup does not exist =="
+output=$(wendzelnntpadm delacluser testuser invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User testuser exists: okay"
+check_output "$output" "Newsgroup invalid does not exists."
+
+echo "== Test delacluser command but user does not exist =="
+output=$(wendzelnntpadm delacluser invalid alt.wendzelnntpd.test.post 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "User invalid does not exists."
+
+echo "== Test addaclrole command =="
+output=$(wendzelnntpadm addaclrole newrole 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role newrole does not exists: okay"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "newrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test addaclrole command but role already exists =="
+output=$(wendzelnntpadm addaclrole newrole 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role newrole already exists."
+
+echo "== Test delaclrole command for existing role =="
+output=$(wendzelnntpadm delaclrole newrole 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role newrole exists: okay."
+check_output "$output" "Removing associations of role newrole with their users ... don"
+check_output "$output" "Removing associations of role newrole with their newsgroups ... done"
+check_output "$output" "Removing role newrole ... done"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test delaclrole command for non existing role =="
+output=$(wendzelnntpadm delaclrole invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role invalid does not exists."
+
+echo "== Test rolegroupconnect command =="
+output=$(wendzelnntpadm rolegroupconnect testrole alt.wendzelnntpd.test.empty 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "Newsgroup alt.wendzelnntpd.test.empty exists: okay."
+check_output "$output" "Connecting role testrole with newsgroup alt.wendzelnntpd.test.empty ... done"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "testrole, alt.wendzelnntpd.test.empty"
+check_output "$output" "done."
+
+echo "== Test rolegroupconnect command but newsgroup does not exist =="
+output=$(wendzelnntpadm rolegroupconnect testrole invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "Newsgroup invalid does not exists."
+
+echo "== Test rolegroupconnect command but role does not exist =="
+output=$(wendzelnntpadm rolegroupconnect invalid alt.wendzelnntpd.test.empty 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role invalid does not exists."
+
+echo "== Test rolegroupdisconnect command for existing role and newsgroup =="
+output=$(wendzelnntpadm rolegroupdisconnect testrole alt.wendzelnntpd.test.empty 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "Newsgroup alt.wendzelnntpd.test.empty exists: okay."
+check_output "$output" "Dis-Connecting role testrole from newsgroup alt.wendzelnntpd.test.empty ... done"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test rolegroupdisconnect command but newsgroup does not exist =="
+output=$(wendzelnntpadm rolegroupdisconnect testrole invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "Newsgroup invalid does not exists."
+
+echo "== Test rolegroupdisconnect command but role does not exist =="
+output=$(wendzelnntpadm rolegroupdisconnect invalid alt.wendzelnntpd.test.empty 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role invalid does not exists."
+
+echo "== Test roleuserconnect command =="
+output=$(wendzelnntpadm roleuserconnect testrole testuser2 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "User testuser2 exists: okay."
+check_output "$output" "Connecting role testrole with user testuser2 ... done"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "testrole, testuser2"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test roleuserconnect command but user does not exist =="
+output=$(wendzelnntpadm roleuserconnect testrole invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "User invalid does not exists."
+
+echo "== Test roleuserconnect command but role does not exist =="
+output=$(wendzelnntpadm roleuserconnect invalid testuser2 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role invalid does not exists."
+
+echo "== Test roleuserdisconnect command for existing role and iser =="
+output=$(wendzelnntpadm roleuserdisconnect testrole testuser2 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "User testuser2 exists: okay."
+check_output "$output" "Dis-Connecting role testrole from user testuser2 ... done"
+check_output "$output" "done."
+
+output=$(wendzelnntpadm listacl 2>&1)
+returncode=$?
+
+check_returncode $returncode 0 "$output"
+check_output "$output" "List of roles in database:"
+check_output "$output" "Roles"
+check_output "$output" "-----"
+check_output "$output" "testrole"
+check_output "$output" "Connections between users and roles:"
+check_output "$output" "Role, User"
+check_output "$output" "----------"
+check_output "$output" "testrole, testuser"
+check_output "$output" "Username, Has access to group"
+check_output "$output" "-----------------------------"
+check_output "$output" "testuser, alt.wendzelnntpd.test"
+check_output "$output" "testuser2, alt.wendzelnntpd.test.empty"
+check_output "$output" "Role, Has access to group"
+check_output "$output" "-------------------------"
+check_output "$output" "testrole, alt.wendzelnntpd.test.post"
+check_output "$output" "done."
+
+echo "== Test roleuserdisconnect command but user does not exist =="
+output=$(wendzelnntpadm roleuserdisconnect testrole invalid 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role testrole exists: okay"
+check_output "$output" "User invalid does not exists."
+
+echo "== Test roleuserdisconnect command but role does not exist =="
+output=$(wendzelnntpadm roleuserdisconnect invalid testuser2 2>&1)
+returncode=$?
+
+check_returncode $returncode 1 "$output"
+check_output "$output" "Role invalid does not exists."
