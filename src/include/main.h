@@ -65,6 +65,7 @@
    #include <ws2tcpip.h>
 #endif
 #include <assert.h>
+#include <inttypes.h>
 
 /* precondition */
 
