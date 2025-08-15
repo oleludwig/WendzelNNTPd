@@ -200,7 +200,7 @@ db_mysql_post_insert_into_postings(server_cb_inf *inf, char *message_id,
 
 	snprintf(sql_cmd, len - 1,
 		"insert into postings (`msgid`, `date`, `author`, `newsgroups`, `subject`, "
-		"`lines`, `header`) values ('%s', '%" PRId64 "', '%s', '%s', '%s', '%i', '%s');",
+		"`lines`, `header`) values ('%s', '%lli', '%s', '%s', '%s', '%i', '%s');",
 		message_id, ltime, from, ngstrpb, subj, linecount, add_to_hdr);
 
 	if (mysql_real_query(inf->servinf->myhndl, sql_cmd, strlen(sql_cmd)) != 0) {
