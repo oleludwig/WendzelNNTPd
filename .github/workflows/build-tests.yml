@@ -296,7 +296,7 @@ jobs:
             pkg install -y mariadb114-client
             pkg install -y postgresql17-client
           run: |
-            POSTGRES=YES ./configure
+            LDFLAGS=-L/usr/local/lib/mysql POSTGRES=YES ./configure
             make
             make install
         if: ${{ matrix.distribution == 'freebsd' }}
