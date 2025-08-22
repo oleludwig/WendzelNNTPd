@@ -116,7 +116,7 @@ jobs:
           sed -i 's/ffff6aff20342e7166ff3479ff1e0014ff5358ffffffff645c1f6076ff61fffff/89bf6a8320342e7166fb3479f81e0014af5358bbeff9b2645c1f6076bc618ef1/' unittesting/test_wendzelnntpadm.sh;"
         if: ${{ !(matrix.platform == 'linux/amd64' || matrix.platform == 'linux/386') }}
       - name: configure
-        run: docker exec testcontainer bash -c "POSTGRES=YES ./configure"
+        run: docker exec testcontainer bash -c "CFLAGS=-I/usr/include/pgsql POSTGRES=YES ./configure"
       - name: make
         run: docker exec testcontainer bash -c "make"
       - name: make install
@@ -279,7 +279,7 @@ jobs:
             pkg_add postgresql-client
           run: |
             cp unittesting/test-files/openssl.cnf /etc/ssl/openssl.cnf
-            POSTGRES=YES ./configure
+            CFLAGS=-I/usr/local/include/postgresql POSTGRES=YES ./configure
             make
             make install
         if: ${{ matrix.distribution == 'openbsd' }}
