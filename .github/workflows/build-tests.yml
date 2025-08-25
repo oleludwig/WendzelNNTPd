@@ -279,7 +279,7 @@ jobs:
             pkg_add postgresql-client
           run: |
             cp unittesting/test-files/openssl.cnf /etc/ssl/openssl.cnf
-            POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
             make
             make install
         if: ${{ matrix.distribution == 'openbsd' }}
@@ -296,7 +296,7 @@ jobs:
             pkg install -y mariadb114-client
             pkg install -y postgresql17-client
           run: |
-            POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib"
             make
             make install
         if: ${{ matrix.distribution == 'freebsd' }}
@@ -318,7 +318,7 @@ jobs:
           run: |
             cp unittesting/test-files/openssl.cnf /etc/openssl/openssl.cnf
             export PATH=/sbin:/usr/sbin:$PATH
-            CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
+            ./configure --enable-postgres CPPFLAGS="-I/usr/pkg/include" LDFLAGS="-L/usr/pkg/lib -Wl,-R/usr/pkg/lib"
             make
             make install
         if: ${{ matrix.distribution == 'netbsd' }}
