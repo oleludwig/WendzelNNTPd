@@ -1,0 +1,22 @@
+site_name: WendzelNNTPd
+nav:
+  - Introduction: index.md
+  - Installation: about.md
+#theme: readthedocs
+theme: material
+repo_url: https://github.com/cdpxe/WendzelNNTPd
+copyright: GPLv3
+markdown_extensions:
+  - footnotes
+plugins:
+  - search
+#  - pdf-export:
+#      combined: true
+#  - with-pdf
+#  - page-to-pdf
+  - exporter:
+      formats:
+        pdf:
+          enabled: !ENV [MKDOCS_EXPORTER_PDF, true]
+          aggregator:
+            enabled: true
