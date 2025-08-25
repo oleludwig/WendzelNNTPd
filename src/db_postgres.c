@@ -231,7 +231,7 @@ db_postgres_post_insert_into_postings(server_cb_inf *inf, char *message_id,
 	    "values ($1,$2,$3,$4,$5,$6,$7)";
 	char buf[128];
 	char buf_line[128];
-	snprintf(buf, 128-1, "%ld", ltime);
+	snprintf(buf, 128-1, "%lld", (long long) ltime);
 	snprintf(buf_line, 128-1, "%d", linecount);
 
 
@@ -239,7 +239,7 @@ db_postgres_post_insert_into_postings(server_cb_inf *inf, char *message_id,
 	    fprintf(stderr, "--- Dump Message ---\n");
 	    fprintf(stderr, "%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 		    message_id, buf, from, ngstrpb, subj, buf_line, add_to_hdr);
-	    fprintf(stderr, "%ld\n%ld\n%ld\n%ld\n%ld\n%ld\n%ld\n",
+	    fprintf(stderr, "%zd\n%zd\n%zd\n%zd\n%zd\n%zd\n%zd\n",
 		    strlen(message_id),
 		    strlen(buf),
 		    strlen(from),
@@ -559,9 +559,9 @@ db_postgres_xhdr(server_cb_inf *inf, short message_id_flg, int xhdr, char *artic
 	} else {
 	    sql_cmd =
 		"select * from xhdr_get($1, $2, null, $3, $4)";
-	    paramValues[1] = inf->servinf->selected_group;
-	    paramLengths[1] = strlen(paramValues[1]);
-	    param++;
+		paramValues[1] = inf->servinf->selected_group;
+        paramLengths[1] = strlen(paramValues[1]);
+        param++;
 	    paramValues[2] = min_s;
 	    paramLengths[2] = strlen(paramValues[2]);
 	    param++;
@@ -1808,7 +1808,7 @@ db_postgres_load_message_body(server_cb_inf *inf, char *message_id)
 	char *dup_s = strndup(body, octet);
 
 	if (be_verbose) {
-	    fprintf(stderr, "octent length / strlen: %u/%lu Bytes at (%p)\n",
+	    fprintf(stderr, "octent length / strlen: %u/%zu Bytes at (%p)\n",
 		    octet, strlen(body), body);
 	}
 	PQclear(res);
