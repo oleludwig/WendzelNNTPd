@@ -5,11 +5,6 @@ echo
 
 mkdir -p /usr/local/etc/ssl
 
-if [ "$USER" != "root" ]; then
-    echo "Run this script with root privileges!"
-    exit
-fi
-
 function usage {
     echo ""
     echo "Creates certificates for WendzelNNTPd (selfsigned or via LetsEncrypt)"
