@@ -278,6 +278,7 @@ jobs:
             pkg_add mariadb-client
             pkg_add postgresql-client
           run: |
+            cp unittesting/test-files/openssl.cnf /etc/ssl/openssl.cnf
             CFLAGS=-I/usr/local/include/postgresql POSTGRES=YES ./configure
             make
             make install
@@ -315,6 +316,7 @@ jobs:
             /usr/sbin/pkg_add mariadb-client
             /usr/sbin/pkg_add postgresql17-client
           run: |
+            cp unittesting/test-files/openssl.cnf /etc/openssl/openssl.cnf
             export PATH=/sbin:/usr/sbin:$PATH
             CFLAGS=-I/usr/pkg/include\ -I/usr/include LDFLAGS=-L/usr/pkg/lib\ -Wl,-R/usr/pkg/lib POSTGRES=YES ./configure
             make
