@@ -1,0 +1,155 @@
+\contentsline {section}{\numberline {1}Basic Configuration}{4}{section.0.1}%
+\contentsline {subsection}{\numberline {1.1}Choosing a database engine}{4}{subsection.0.1.1}%
+\contentsline {subsubsection}{\nonumberline Modifying wendzelnntpd.conf}{5}{subsubsection*.3}%
+\contentsline {subsubsection}{\nonumberline Generating your database tables}{5}{subsubsection*.5}%
+\contentsline {paragraph}{\nonumberline SQLite}{5}{paragraph*.7}%
+\contentsline {paragraph}{\nonumberline MySQL}{5}{paragraph*.9}%
+\contentsline {paragraph}{\nonumberline PostgreSQL}{6}{paragraph*.11}%
+\contentsline {subsection}{\numberline {1.2}Network Settings}{6}{subsection.0.1.2}%
+\contentsline {subsection}{\numberline {1.3}Setting the Allowed Size of Postings}{7}{subsection.0.1.3}%
+\contentsline {subsection}{\numberline {1.4}Verbose Mode}{8}{subsection.0.1.4}%
+\contentsline {subsection}{\numberline {1.5}Security Settings}{8}{subsection.0.1.5}%
+\contentsline {subsubsection}{\nonumberline Authentication and Access Control Lists (ACL)}{8}{subsubsection*.13}%
+\contentsline {subsubsection}{\nonumberline Anonymized Message-ID}{8}{subsubsection*.15}%
+\contentsline {subsubsection}{\nonumberline Changing the Default Salt for Password Hashing}{9}{subsubsection*.17}%
+\contentsline {subsubsection}{\nonumberline Encrypted communication (TLS)}{9}{subsubsection*.19}%
+\contentsline {section}{\numberline {2}Development}{9}{section.0.2}%
+\contentsline {subsubsection}{\nonumberline Initial setup}{9}{subsubsection*.21}%
+\contentsline {subsubsection}{\nonumberline Test new code}{10}{subsubsection*.23}%
+\contentsline {section}{\numberline {3}Introduction}{10}{section.0.3}%
+\contentsline {subsection}{\numberline {3.1}Features}{10}{subsection.0.3.1}%
+\contentsline {subsubsection}{\nonumberline License}{10}{subsubsection*.25}%
+\contentsline {subsubsection}{\nonumberline Database Abstraction Layer}{10}{subsubsection*.27}%
+\contentsline {subsubsection}{\nonumberline Security}{10}{subsubsection*.29}%
+\contentsline {subsubsection}{\nonumberline Auto-prevention of double-postings}{11}{subsubsection*.31}%
+\contentsline {subsubsection}{\nonumberline IPv6}{11}{subsubsection*.33}%
+\contentsline {subsubsection}{\nonumberline Why this is not a perfect Usenet server}{11}{subsubsection*.35}%
+\contentsline {subsection}{\numberline {3.2}Contribute}{11}{subsection.0.3.2}%
+\contentsline {subsection}{\numberline {3.3}History}{11}{subsection.0.3.3}%
+\contentsline {section}{\numberline {4}Installation}{11}{section.0.4}%
+\contentsline {subsection}{\numberline {4.1}Linux/*nix/BSD}{11}{subsection.0.4.1}%
+\contentsline {subparagraph}{Generating SSL certifiates}{12}{section*.36}%
+\contentsline {subparagraph}{Installing WendzelNNTPd}{12}{section*.37}%
+\contentsline {subsubsection}{\nonumberline Init Script for Automatic Startup}{13}{subsubsection*.39}%
+\contentsline {subsection}{\numberline {4.2}Unofficial Note: Mac OS X}{13}{subsection.0.4.2}%
+\contentsline {subsection}{\numberline {4.3}Windows}{13}{subsection.0.4.3}%
+\contentsline {section}{\numberline {5}Basic Configuration}{13}{section.0.5}%
+\contentsline {subsection}{\numberline {5.1}Choosing a database engine}{13}{subsection.0.5.1}%
+\contentsline {subsubsection}{\nonumberline Modifying wendzelnntpd.conf}{13}{subsubsection*.41}%
+\contentsline {subsubsection}{\nonumberline Generating your database tables}{14}{subsubsection*.43}%
+\contentsline {paragraph}{\nonumberline SQLite}{14}{paragraph*.45}%
+\contentsline {paragraph}{\nonumberline MySQL}{14}{paragraph*.47}%
+\contentsline {paragraph}{\nonumberline PostgreSQL}{14}{paragraph*.49}%
+\contentsline {subsection}{\numberline {5.2}Network Settings}{15}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {5.3}Setting the Allowed Size of Postings}{16}{subsection.0.5.3}%
+\contentsline {subsection}{\numberline {5.4}Verbose Mode}{16}{subsection.0.5.4}%
+\contentsline {subsection}{\numberline {5.5}Security Settings}{17}{subsection.0.5.5}%
+\contentsline {subsubsection}{\nonumberline Authentication and Access Control Lists (ACL)}{17}{subsubsection*.51}%
+\contentsline {subsubsection}{\nonumberline Anonymized Message-ID}{17}{subsubsection*.53}%
+\contentsline {subsubsection}{\nonumberline Changing the Default Salt for Password Hashing}{17}{subsubsection*.55}%
+\contentsline {subsubsection}{\nonumberline Encrypted communication (TLS)}{18}{subsubsection*.57}%
+\contentsline {section}{\numberline {6}Starting and Running WendzelNNTPd}{18}{section.0.6}%
+\contentsline {subsection}{\numberline {6.1}Starting the Service}{18}{subsection.0.6.1}%
+\contentsline {subsection}{\numberline {6.2}Stopping and Restarting the Service}{18}{subsection.0.6.2}%
+\contentsline {subsubsection}{\nonumberline Automating Start, Stop, and Restart}{18}{subsubsection*.59}%
+\contentsline {subsection}{\numberline {6.3}Administration Tool `wendzelnntpadm'}{19}{subsection.0.6.3}%
+\contentsline {subsection}{\numberline {6.4}Creating/Listing/Deleting Newsgroups}{19}{subsection.0.6.4}%
+\contentsline {subsubsection}{\nonumberline Listing existing newsgroups}{20}{subsubsection*.61}%
+\contentsline {subsubsection}{\nonumberline Creating a new newsgroup}{20}{subsubsection*.63}%
+\contentsline {subsubsection}{\nonumberline Deleting a newsgroup}{20}{subsubsection*.65}%
+\contentsline {subsection}{\numberline {6.5}User Accounts Administration}{20}{subsection.0.6.5}%
+\contentsline {subsubsection}{\nonumberline Listing Users (and Passwords)}{21}{subsubsection*.67}%
+\contentsline {subsubsection}{\nonumberline Creating a new user}{21}{subsubsection*.69}%
+\contentsline {subsubsection}{\nonumberline Deleting an existing user}{21}{subsubsection*.71}%
+\contentsline {subsection}{\numberline {6.6}Access Control List Administration (in case the standard NNTP authentication is not enough)}{22}{subsection.0.6.6}%
+\contentsline {subsubsection}{\nonumberline Invisible Newsgroups}{22}{subsubsection*.73}%
+\contentsline {subsubsection}{\nonumberline Simple Access Control}{22}{subsubsection*.75}%
+\contentsline {paragraph}{\nonumberline Giving a user access to a newsgroup}{22}{paragraph*.77}%
+\contentsline {paragraph}{\nonumberline Removing a user's access to a newsgroup}{23}{paragraph*.79}%
+\contentsline {subsubsection}{\nonumberline Adding and Removing ACL Roles}{23}{subsubsection*.81}%
+\contentsline {paragraph}{\nonumberline Creating an ACL Role}{23}{paragraph*.83}%
+\contentsline {paragraph}{\nonumberline Deleting an ACL Role}{24}{paragraph*.85}%
+\contentsline {subsubsection}{\nonumberline Connecting and Disconnecting Users with/from Roles}{24}{subsubsection*.87}%
+\contentsline {paragraph}{\nonumberline Connecting a User with a Role}{24}{paragraph*.89}%
+\contentsline {paragraph}{\nonumberline Disconnecting a User from a Role}{24}{paragraph*.91}%
+\contentsline {subsubsection}{\nonumberline Connecting and Disconnecting Roles with/from Newsgroups}{24}{subsubsection*.93}%
+\contentsline {paragraph}{\nonumberline Connecting a Role with a Newsgroup}{24}{paragraph*.95}%
+\contentsline {paragraph}{\nonumberline Disconnecting a Role From a Newsgroup}{25}{paragraph*.97}%
+\contentsline {subsubsection}{\nonumberline Listing Your Whole ACL Configuration Again}{25}{subsubsection*.99}%
+\contentsline {paragraph}{\nonumberline Saving time}{25}{paragraph*.101}%
+\contentsline {subsection}{\numberline {6.7}Hardening}{26}{subsection.0.6.7}%
+\contentsline {section}{\numberline {7}Development}{26}{section.0.7}%
+\contentsline {subsubsection}{\nonumberline Initial setup}{26}{subsubsection*.103}%
+\contentsline {subsubsection}{\nonumberline Test new code}{27}{subsubsection*.105}%
+\contentsline {section}{\numberline {8}Upgrading}{27}{section.0.8}%
+\contentsline {subsection}{\numberline {8.1}Upgrade fom version 2.1.y to 2.2.x}{27}{subsection.0.8.1}%
+\contentsline {subsection}{\numberline {8.2}Upgrade from version 2.1.x to 2.1.y}{27}{subsection.0.8.2}%
+\contentsline {subsection}{\numberline {8.3}Upgrade from version 2.0.x to 2.1.y}{27}{subsection.0.8.3}%
+\contentsline {subsection}{\numberline {8.4}Upgrade from version 2.0.x to 2.0.y \{\#20xto20y\}}{27}{subsection.0.8.4}%
+\contentsline {subsection}{\numberline {8.5}Upgrade from version 1.4.x to 2.0.x}{28}{subsection.0.8.5}%
+\contentsline {subparagraph}{Preparation Step:}{28}{section*.106}%
+\contentsline {subparagraph}{First Step:}{28}{section*.107}%
+\contentsline {subparagraph}{Second Step:}{28}{section*.108}%
+\contentsline {subparagraph}{Third Step:}{28}{section*.109}%
+\contentsline {subparagraph}{Fix Postings}{29}{section*.110}%
+\contentsline {subparagraph}{Last Step (Checking whether it works!):}{29}{section*.111}%
+\contentsline {section}{\numberline {9}Installation}{30}{section.0.9}%
+\contentsline {subsection}{\numberline {9.1}Linux/*nix/BSD}{30}{subsection.0.9.1}%
+\contentsline {subparagraph}{Generating SSL certifiates}{30}{section*.112}%
+\contentsline {subparagraph}{Installing WendzelNNTPd}{31}{section*.113}%
+\contentsline {subsubsection}{\nonumberline Init Script for Automatic Startup}{31}{subsubsection*.115}%
+\contentsline {subsection}{\numberline {9.2}Unofficial Note: Mac OS X}{31}{subsection.0.9.2}%
+\contentsline {subsection}{\numberline {9.3}Windows}{31}{subsection.0.9.3}%
+\contentsline {section}{\numberline {10}Introduction}{31}{section.0.10}%
+\contentsline {subsection}{\numberline {10.1}Features}{31}{subsection.0.10.1}%
+\contentsline {subsubsection}{\nonumberline License}{31}{subsubsection*.117}%
+\contentsline {subsubsection}{\nonumberline Database Abstraction Layer}{31}{subsubsection*.119}%
+\contentsline {subsubsection}{\nonumberline Security}{32}{subsubsection*.121}%
+\contentsline {subsubsection}{\nonumberline Auto-prevention of double-postings}{32}{subsubsection*.123}%
+\contentsline {subsubsection}{\nonumberline IPv6}{32}{subsubsection*.125}%
+\contentsline {subsubsection}{\nonumberline Why this is not a perfect Usenet server}{32}{subsubsection*.127}%
+\contentsline {subsection}{\numberline {10.2}Contribute}{32}{subsection.0.10.2}%
+\contentsline {subsection}{\numberline {10.3}History}{32}{subsection.0.10.3}%
+\contentsline {section}{\numberline {11}Starting and Running WendzelNNTPd}{33}{section.0.11}%
+\contentsline {subsection}{\numberline {11.1}Starting the Service}{33}{subsection.0.11.1}%
+\contentsline {subsection}{\numberline {11.2}Stopping and Restarting the Service}{33}{subsection.0.11.2}%
+\contentsline {subsubsection}{\nonumberline Automating Start, Stop, and Restart}{33}{subsubsection*.129}%
+\contentsline {subsection}{\numberline {11.3}Administration Tool `wendzelnntpadm'}{34}{subsection.0.11.3}%
+\contentsline {subsection}{\numberline {11.4}Creating/Listing/Deleting Newsgroups}{34}{subsection.0.11.4}%
+\contentsline {subsubsection}{\nonumberline Listing existing newsgroups}{34}{subsubsection*.131}%
+\contentsline {subsubsection}{\nonumberline Creating a new newsgroup}{34}{subsubsection*.133}%
+\contentsline {subsubsection}{\nonumberline Deleting a newsgroup}{35}{subsubsection*.135}%
+\contentsline {subsection}{\numberline {11.5}User Accounts Administration}{35}{subsection.0.11.5}%
+\contentsline {subsubsection}{\nonumberline Listing Users (and Passwords)}{35}{subsubsection*.137}%
+\contentsline {subsubsection}{\nonumberline Creating a new user}{36}{subsubsection*.139}%
+\contentsline {subsubsection}{\nonumberline Deleting an existing user}{36}{subsubsection*.141}%
+\contentsline {subsection}{\numberline {11.6}Access Control List Administration (in case the standard NNTP authentication is not enough)}{36}{subsection.0.11.6}%
+\contentsline {subsubsection}{\nonumberline Invisible Newsgroups}{36}{subsubsection*.143}%
+\contentsline {subsubsection}{\nonumberline Simple Access Control}{37}{subsubsection*.145}%
+\contentsline {paragraph}{\nonumberline Giving a user access to a newsgroup}{37}{paragraph*.147}%
+\contentsline {paragraph}{\nonumberline Removing a user's access to a newsgroup}{37}{paragraph*.149}%
+\contentsline {subsubsection}{\nonumberline Adding and Removing ACL Roles}{37}{subsubsection*.151}%
+\contentsline {paragraph}{\nonumberline Creating an ACL Role}{38}{paragraph*.153}%
+\contentsline {paragraph}{\nonumberline Deleting an ACL Role}{38}{paragraph*.155}%
+\contentsline {subsubsection}{\nonumberline Connecting and Disconnecting Users with/from Roles}{38}{subsubsection*.157}%
+\contentsline {paragraph}{\nonumberline Connecting a User with a Role}{38}{paragraph*.159}%
+\contentsline {paragraph}{\nonumberline Disconnecting a User from a Role}{39}{paragraph*.161}%
+\contentsline {subsubsection}{\nonumberline Connecting and Disconnecting Roles with/from Newsgroups}{39}{subsubsection*.163}%
+\contentsline {paragraph}{\nonumberline Connecting a Role with a Newsgroup}{39}{paragraph*.165}%
+\contentsline {paragraph}{\nonumberline Disconnecting a Role From a Newsgroup}{39}{paragraph*.167}%
+\contentsline {subsubsection}{\nonumberline Listing Your Whole ACL Configuration Again}{39}{subsubsection*.169}%
+\contentsline {paragraph}{\nonumberline Saving time}{40}{paragraph*.171}%
+\contentsline {subsection}{\numberline {11.7}Hardening}{40}{subsection.0.11.7}%
+\contentsline {section}{\numberline {12}Upgrading}{41}{section.0.12}%
+\contentsline {subsection}{\numberline {12.1}Upgrade fom version 2.1.y to 2.2.x}{41}{subsection.0.12.1}%
+\contentsline {subsection}{\numberline {12.2}Upgrade from version 2.1.x to 2.1.y}{41}{subsection.0.12.2}%
+\contentsline {subsection}{\numberline {12.3}Upgrade from version 2.0.x to 2.1.y}{41}{subsection.0.12.3}%
+\contentsline {subsection}{\numberline {12.4}Upgrade from version 2.0.x to 2.0.y \{\#20xto20y\}}{41}{subsection.0.12.4}%
+\contentsline {subsection}{\numberline {12.5}Upgrade from version 1.4.x to 2.0.x}{41}{subsection.0.12.5}%
+\contentsline {subparagraph}{Preparation Step:}{42}{section*.172}%
+\contentsline {subparagraph}{First Step:}{42}{section*.173}%
+\contentsline {subparagraph}{Second Step:}{42}{section*.174}%
+\contentsline {subparagraph}{Third Step:}{42}{section*.175}%
+\contentsline {subparagraph}{Fix Postings}{43}{section*.176}%
+\contentsline {subparagraph}{Last Step (Checking whether it works!):}{43}{section*.177}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

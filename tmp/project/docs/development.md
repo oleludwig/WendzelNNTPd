@@ -1,0 +1,34 @@
+# Development
+
+For development purposes you can start WendzelNNTPd on your host system.
+If you are using an unsupported operating system or just not run
+WenzdelNNTPd on your host system, you can use the provided Dockerfiles
+to run WendzelNNTPd in a Docker container.
+
+### Initial setup
+
+When you are on a UNIX-based system (like macOS) you can use the
+provided make commands:
+
+    $ make docker-build
+    $ make docker-run
+
+To stop the Docker container you can use the following command:
+
+    $ make docker-stop
+
+If you are not on a UNIX-based system (like Windows) use the following
+native docker commands:
+
+    $ docker build -f ./docker/Dockerfile -t wendzelnntpd:latest .
+    $ docker run --name wendzelnntpd --rm -it -p 118:118 -p 119:119 -p 563:563 -p 564:564 -v ${PWD}:/wendzelnntpd -v wendzelnntpd_data:/var/spool/news/wendzelnntpd wendzelnntpd:latest
+
+To stop the Docker container you can use the following command:
+
+    $ docker stop wendzelnntpd
+
+### Test new code
+
+The container is build without code included. The code is automatically
+mounted as volume into the container. After each change of source code,
+the application is compiled again.

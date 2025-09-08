@@ -1,0 +1,2572 @@
+\documentclass[12pt,fleqn,leqno]{scrbook}
+\usepackage{ae}
+%\usepackage{german}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[latin1]{inputenc}
+
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{alltt} % fuer Mathematisches Zeug innerhalb von verbatim-Bloecken
+\usepackage{array}
+%\usepackage{bibgerm} % fuer .bib zeug in DE
+\usepackage[intoc]{nomencl}
+\usepackage{nomencl}
+\usepackage[a4paper,left=3.5cm,right=1.5cm,bottom=3cm,top=3.5cm]{geometry}
+
+%\makeindex
+
+\counterwithout{section}{chapter}
+\counterwithout{figure}{chapter}
+
+\title{WendzelNNTPd Version 2.2 Documentation}
+\author{Steffen Wendzel and contributors}
+
+\begin{document}
+
+\maketitle
+
+%\addcontentsline{toc}{chapter}{Table of Contents}
+\tableofcontents
+
+\hypertarget{basic-configuration}{%
+\section{Basic Configuration}\label{basic-configuration}}
+
+\protect\hypertarget{Ch:Config}{}{}
+
+This chapter will explain how to configure WendzelNNTPd after
+installation.
+
+\textbf{Note:} The configuration file for WendzelNNTPd is named
+\emph{/usr/local/etc/wendzelnntpd.conf}. The format of the configuration
+file should be self-explanatory and the default configuration file
+includes many comments which will help you to understand its content.
+
+\textbf{Note:} On *nix-like operating systems the default installation
+path is \emph{/usr/local/*}, i.e., the configuration file of
+WendzelNNTPd will be \emph{/usr/local/etc/wendzelnntpd.conf}, and the
+binaries will be placed in \emph{/usr/local/sbin}.
+
+\hypertarget{choosing-a-database-engine}{%
+\subsection{Choosing a database
+engine}\label{choosing-a-database-engine}}
+
+The first and most important step is to choose a database engine. You
+can use either SQLite3 (this is the default case and easy to use, but
+not suitable for larger systems with many thousand postings or users) or
+MySQL (which is the more advaned solution, but also a little bit more
+complicated to realize). By default, WendzelNNTPd is configured for
+SQLite3 and is ready to run. If you want to keep this setting, you do
+not have to read this section.
+
+\hypertarget{modifying-wendzelnntpd.conf}{%
+\subsubsection{Modifying
+wendzelnntpd.conf}\label{modifying-wendzelnntpd.conf}}
+
+In the configuration file you will find a parameter called
+\textbf{database-engine}. You can choose to use either MySQL or SQLite
+as the backend storage system by appending either \textbf{sqlite} or
+\textbf{mysql}. Experimental support for PostgreSQL can be activiated
+with \textbf{postgres}.
+
+\begin{verbatim}
+database-engine mysql
+\end{verbatim}
+
+If you choose to use MySQL then you will also need to specify the user
+and password which WendzelNNTPd must use to connect to the MySQL server.
+If your server does not run on localhost or uses a non-default MySQL
+port then you will have to modify these values too.
+
+\begin{verbatim}
+; Your database hostname (not needed for sqlite3)
+database-server 127.0.0.1
+
+; the database connection port (not needed for sqlite3)
+; Comment out to use the default port of your database engine
+database-port 3306
+
+; Server authentication (not needed for sqlite3)
+database-username mysqluser
+database-password supercoolpass
+\end{verbatim}
+
+\hypertarget{generating-your-database-tables}{%
+\subsubsection{Generating your database
+tables}\label{generating-your-database-tables}}
+
+Once you have chosen your database backend you will need to create the
+database and the required tables.
+
+\hypertarget{sqlite}{%
+\paragraph{SQLite}\label{sqlite}}
+
+If you chose SQLite as your database backend then you can skip this step
+as running \textbf{make install} does this for you.
+
+\textbf{Note:} The SQLite database file as well as the posting
+management files will be stored in \emph{/var/spool/news/wendzelnntpd/}.
+
+\hypertarget{mysql}{%
+\paragraph{MySQL}\label{mysql}}
+
+For MySQL, an SQL script file called \emph{mysql\_db\_struct.sql} is
+included. It creates the WendzelNNTPd database and all the needed
+tables. Use the MySQL console tool to execute the script.
+
+\begin{verbatim}
+$ cd /path/to/your/extracted/wendzelnntpd-archive/
+$ mysql -u YOUR-USER -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 48
+Server version: 5.1.37-1ubuntu5.1 (Ubuntu)
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> source mysql\_db\_struct.sql
+...
+mysql> quit
+Bye
+\end{verbatim}
+
+\hypertarget{postgresql}{%
+\paragraph{PostgreSQL}\label{postgresql}}
+
+Similarly to MySQL, there is a SQL script file
+(\emph{postgres\_db\_struct.sql}) to create the WendzelNNTPd database.
+Create and setup a new database (and an corresponding user) and use the
+\texttt{psql(1)} command line client to load table and function
+definitions:
+
+\begin{verbatim}
+$ psql --username USER -W wendzelnntpd
+wendzelnntpd=> begin;
+wendzelnntpd=> \i database/postgres_db_struct.sql
+wendzelnntpd=> commit; quit;
+\end{verbatim}
+
+\hypertarget{network-settings}{%
+\subsection{Network Settings}\label{network-settings}}
+
+For each type of IP address (IPv4 and/or IPv6) you have to define a own
+connector. You can find an example for NNTP over port 119 below.
+
+\begin{verbatim}
+<connector>
+    ;; enables STARTTLS for this port
+    ;enable-starttls
+    port        119
+    listen      127.0.0.1
+    ;; configure SSL server certificate (required)
+    ;tls-server-certificate "/usr/local/etc/ssl/server.crt"
+    ;; configure SSL private key (required)
+    ;tls-server-key "/usr/local/etc/ssl/server.key"
+    ;; configure SSL CA certificate (required)
+    ;tls-ca-certificate "/usr/local/etc/ssl/ca.crt"
+    ;; configure TLS ciphers for TLSv1.3
+    ;tls-cipher-suites "TLS_AES_128_GCM_SHA256"
+    ;; configure TLS ciphers for TLSv1.1 and TLSv1.2
+    ;tls-ciphers "ALL:!COMPLEMENTOFDEFAULT:!eNULL"
+    ;; configure allowed TLS version (1.0-1.3)
+    ;tls-version "1.2-1.3"
+    ;; possibility to force the client to authenticate 
+    ;;with client certificate (none | optional | require)
+    ;tls-verify-client "required"
+    ;; define depth for checking client certificate
+    ;tls-verify-client-depth 0
+    ;; possibility to use certificate revocation list (none | leaf | chain)
+    ;tls-crl "none"
+    ;tls-crl-file "/usr/local/etc/ssl/ssl.crl"
+</connector>
+\end{verbatim}
+
+To use dedicated TLS with NNTP (SNNTP) you can define another connector.
+The example below is for SNNTP over port 563.
+
+\begin{verbatim}
+<connector>
+    ;; enables TLS for this port
+    ;enable-tls
+    port        563
+    listen      127.0.0.1
+    ;; configure SSL server certificate (required)
+    ;tls-server-certificate "/usr/local/etc/ssl/server.crt"
+    ;; configure SSL private key (required)
+    ;tls-server-key "/usr/local/etc/ssl/server.key"
+    ;; configure SSL CA certificate (required)
+    ;tls-ca-certificate "/usr/local/etc/ssl/ca.crt"
+    ;; configure TLS ciphers for TLSv1.3
+    ;tls-cipher-suites "TLS_AES_128_GCM_SHA256"
+    ;; configure TLS ciphers for TLSv1.1 and TLSv1.2
+    ;tls-ciphers "ALL:!COMPLEMENTOFDEFAULT:!eNULL"
+    ;; configure allowed TLS version (1.0-1.3)
+    ;tls-version "1.2-1.3"
+    ;; possibility to force the client to authenticate 
+    ;;with client certificate (none | optional | require)
+    ;tls-verify-client "required"
+    ;; define depth for checking client certificate
+    ;tls-verify-client-depth 0
+    ;; possibility to use certificate revocation list (none | leaf | chain)
+    ;tls-crl "none"
+    ;tls-crl-file "/usr/local/etc/ssl/ssl.crl"
+</connector>
+\end{verbatim}
+
+The configuration options \emph{tls-server-certificate},
+\emph{tls-server-key} and \emph{tls-ca-certificate} are required for
+using TLS or STARTTLS with NNTP. All other TLS-related options are
+optional. More examples are in the existing \emph{wendzelnntpd.conf}
+file.
+
+\hypertarget{setting-the-allowed-size-of-postings}{%
+\subsection{Setting the Allowed Size of
+Postings}\label{setting-the-allowed-size-of-postings}}
+
+To change the maximum size of a post to be accepted by the server,
+change the variable \textbf{max-size-of-postings}. The value must be set
+in Bytes and the default value is 20971520 (20 MBytes).
+
+\begin{verbatim}
+max-size-of-postings 20971520
+\end{verbatim}
+
+\hypertarget{verbose-mode}{%
+\subsection{Verbose Mode}\label{verbose-mode}}
+
+If you have any problems running WendzelNNTPd or if you simply want more
+information about what is happening, you can uncomment the
+\textbf{verbose-mode} line.
+
+\begin{verbatim}
+; Uncomment 'verbose-mode' if you want to find errors or if you
+; have problems with the logging subsystem. All log strings are
+; written to stderr too, if verbose-mode is set. Additionally all
+; commands sent by clients are written to stderr too (but not to
+; logfile)
+verbose-mode
+\end{verbatim}
+
+\hypertarget{security-settings}{%
+\subsection{Security Settings}\label{security-settings}}
+
+\hypertarget{authentication-and-access-control-lists-acl}{%
+\subsubsection{Authentication and Access Control Lists
+(ACL)}\label{authentication-and-access-control-lists-acl}}
+
+WendzelNNTPd contains an extensive access control subsystem. If you want
+to only allow authenticated users to access the server, you should
+uncomment \textbf{use-authentication}. This gives every authenticated
+user access to each newsgroup.
+
+\begin{verbatim}
+; Activate authentication
+use-authentication
+\end{verbatim}
+
+If you need a slightly more advanced authentication system, you can
+activate Access Control Lists (ACL) by uncommenting \textbf{use-acl}.
+This activates the support for Role-based ACL too.
+
+\begin{verbatim}
+; If you activated authentication, you can also activate access
+; control lists (ACL)
+use-acl
+\end{verbatim}
+
+\hypertarget{anonymized-message-id}{%
+\subsubsection{Anonymized Message-ID}\label{anonymized-message-id}}
+
+By default, WendzelNNTPd makes a user's hostname or IP address part of
+new message IDs when a user sends a post using the NNTP POST command. If
+you do not want that, you can force WendzelNNTPd not to do so by
+uncommenting \textbf{enable-anonym-mids}, which enables anonymized
+message IDs.
+
+\begin{verbatim}
+; This prevents that IPs or Hostnames will become part of the
+; message ID generated by WendzelNNTPd what is the default case.
+; Uncomment it to enable this feature.
+enable-anonym-mids
+\end{verbatim}
+
+\hypertarget{changing-the-default-salt-for-password-hashing}{%
+\subsubsection{Changing the Default Salt for Password
+Hashing}\label{changing-the-default-salt-for-password-hashing}}
+
+When uncommenting the keyword \textbf{hash-salt}, the default salt value
+that is used to enrich the password hashes can be changed. Please note
+that you have to define the salt \emph{before} you set-up the first
+password since it will otherwise be stored hashed using an old salt,
+rendering it unusable. For this reason, it is necessary to define your
+salt right after running \textbf{make install} (or at least before the
+first creation of NNTP user accounts).
+
+\begin{verbatim}
+; This keyword defines a salt to be used in conjunction with the
+; passwords to calculate the cryptographic hashes. The salt must
+; be in the form [a-zA-Z0-9.:\/-_]+.
+; ATTENTION: If you change the salt after passwords have been
+; stored, they will be rendered invalid! If you comment out
+; hash-salt, then the default hash salt defined in the source
+; code will be used.
+hash-salt 0.hG4//3baA-::_\
+\end{verbatim}
+
+WendzelNNTPd applies the SHA-2 hash algorithm using a 256 bit hash
+value. Please also note that the final hash is calculated using a string
+that combines salt, username and password as an input to prevent
+password-identification attacks when an equal password is used by
+multiple users. However, utilizing the username is less secure than
+having a completely separate salt for every password.\footnote{Some
+  *nix-like systems may have a different range of privileged ports.}
+
+\hypertarget{encrypted-communication-tls}{%
+\subsubsection{Encrypted communication
+(TLS)}\label{encrypted-communication-tls}}
+
+Please look at section \protect\hyperlink{network-settings}{1.2} when
+you want to use encryption over TLS.
+
+\hypertarget{development}{%
+\section{Development}\label{development}}
+
+For development purposes you can start WendzelNNTPd on your host system.
+If you are using an unsupported operating system or just not run
+WenzdelNNTPd on your host system, you can use the provided Dockerfiles
+to run WendzelNNTPd in a Docker container.
+
+\hypertarget{initial-setup}{%
+\subsubsection{Initial setup}\label{initial-setup}}
+
+When you are on a UNIX-based system (like macOS) you can use the
+provided make commands:
+
+\begin{verbatim}
+$ make docker-build
+$ make docker-run
+\end{verbatim}
+
+To stop the Docker container you can use the following command:
+
+\begin{verbatim}
+$ make docker-stop
+\end{verbatim}
+
+If you are not on a UNIX-based system (like Windows) use the following
+native docker commands:
+
+\begin{verbatim}
+$ docker build -f ./docker/Dockerfile -t wendzelnntpd:latest .
+$ docker run --name wendzelnntpd --rm -it -p 118:118 -p 119:119 -p 563:563 -p 564:564 -v ${PWD}:/wendzelnntpd -v wendzelnntpd_data:/var/spool/news/wendzelnntpd wendzelnntpd:latest
+\end{verbatim}
+
+To stop the Docker container you can use the following command:
+
+\begin{verbatim}
+$ docker stop wendzelnntpd
+\end{verbatim}
+
+\hypertarget{test-new-code}{%
+\subsubsection{Test new code}\label{test-new-code}}
+
+The container is build without code included. The code is automatically
+mounted as volume into the container. After each change of source code,
+the application is compiled again.
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+WendzelNNTPd is a tiny but easy to use Usenet server (NNTP server) for
+Linux, *nix and BSD. The server is written in C. For security reasons,
+it is compiled with stack smashing protection by default, if your
+compiler supports that feature.
+
+\hypertarget{features}{%
+\subsection{Features}\label{features}}
+
+\hypertarget{license}{%
+\subsubsection{License}\label{license}}
+
+WendzelNNTPd uses the GPLv3 license.
+
+\hypertarget{database-abstraction-layer}{%
+\subsubsection{Database Abstraction
+Layer}\label{database-abstraction-layer}}
+
+The server contains a database abstraction layer. Currently supported
+database systems are SQlite3 and MySQL (and experimental PostgreSQL
+support). New databases can be easily added.
+
+\hypertarget{security}{%
+\subsubsection{Security}\label{security}}
+
+WendzelNNTPd contains different security features, the most important
+features are probably Access Control Lists (ACLs) and the Role Based
+Access Control (RBAC) system. ACL and RBAC are described in a own
+chapter. WendzelNNTPd was probably the first Usenet server with support
+for RBAC.
+
+Another feature that was introduced by WendzelNNTPd (and later adopted
+by other servers) are so-called ``invisible newsgroups'': If access
+control is activated, a user without permission to access the newsgroup
+will not be able to see the existence of the newsgroup. In case the user
+knows about the existence of the newsgroup nevertheless, he will not be
+able to post to or read from the newsgroup.
+
+However, \textbf{please note} that the salting for password hashing is
+using SHA-256, but with a global user-definable salt that is
+concatenated with the username and password, rendering it less secure
+than using unique random hashes per password. WendzelNNTPd does support
+TLS v1.0 to v1.3 including STARTTLS!
+
+\hypertarget{auto-prevention-of-double-postings}{%
+\subsubsection{Auto-prevention of
+double-postings}\label{auto-prevention-of-double-postings}}
+
+In case a user sends a posting that lists the same newsgroup multiple
+times within one post command's ``Newsgroups:'' header tag, the server
+will add it only once to that newsgroup to save memory on the server and
+the time of the readers.
+
+\hypertarget{ipv6}{%
+\subsubsection{IPv6}\label{ipv6}}
+
+WendzelNNTPd supports IPv6. The server can listen on multiple IP
+addresses as well as multiple ports.
+
+\hypertarget{why-this-is-not-a-perfect-usenet-server}{%
+\subsubsection{Why this is not a perfect Usenet
+server}\label{why-this-is-not-a-perfect-usenet-server}}
+
+WendzelNNTPd does not implement all NNTP commands, but the (most)
+important ones. Another problem is that the regular expression library
+used is not 100\% compatible with the NNTP matching in commands like
+``XGTITLE''. Another limitation is that WendzelNNTPd cannot share
+messages with other NNTP servers.
+
+\hypertarget{contribute}{%
+\subsection{Contribute}\label{contribute}}
+
+See the \emph{CONTRIBUTE} file in the tarball.
+
+\hypertarget{history}{%
+\subsection{History}\label{history}}
+
+The project started in 2004 under the name Xyria:cdpNNTPd, as part of
+the Xyria project that also contained a fast DNS server, called
+Xyria:DNSd. In 2007, I renamed it to WendzelNNTPd and stopped
+development of Xyria:DNSd. Version 1.0.0 was released in 2007, version
+2.0.0 in 2011. Since then I have primarily fixed reported bugs and added
+minor features but the software is still maintained and smaller
+advancements can still be expected. A detailed history can be found in
+the \emph{HISTORY} file in the tarball. Fortunately, several people
+contributed to the code and documentation, see \emph{AUTHORS} file.
+
+\hypertarget{installation}{%
+\section{Installation}\label{installation}}
+
+This chapter provides a guide on how to install WendzelNNTPd 2.x.
+
+\hypertarget{linuxnixbsd}{%
+\subsection{Linux/*nix/BSD}\label{linuxnixbsd}}
+
+To install WendzelNNTPd from source you need to download the provided
+archive file (e.g., \emph{wendzelnntpd-2.0.0.tar.gz}) file.\footnote{Some
+  *nix-like systems may have a different range of privileged ports.}
+Extract it and run \textbf{./configure}. Please note that configure
+indicates missing libraries and packages that you may first need to
+install using the package system of your operating system.
+
+\begin{verbatim}
+$ tar -xzf wendzelnntpd-2.0.0.tgz
+$ cd wendzelnntpd
+$ ./configure
+...
+\end{verbatim}
+
+\textbf{Please Note:} \emph{If you wish to compile WITHOUT MySQL or
+WITHOUT SQlite support}, then run \textbf{MYSQL=NO ./configure} or
+\textbf{SQLITE=NO ./configure}, respectively.
+
+~
+
+\textbf{Please Note:} \emph{For FreeBSD/OpenBSD/NetBSD/*BSD: There is no
+MySQL support; you need to use SQLite (i.e., run
+\texttt{MYSQL=NO\ ./configure}). Run \texttt{configure} as well as
+\texttt{make} in the \texttt{bash} shell (under some BSDs you first need
+to install \texttt{bash}).}
+
+~
+
+\textbf{Please Note:} \emph{If you wish to compile WITHOUT TLS support},
+then run \textbf{TLS=NO ./configure}.
+
+~
+
+After \texttt{configure} has finished, run \textbf{make}:
+
+\begin{verbatim}
+$ make
+...
+\end{verbatim}
+
+\hypertarget{generating-ssl-certifiates}{%
+\subparagraph*{Generating SSL
+certifiates}\label{generating-ssl-certifiates}}
+\addcontentsline{toc}{subparagraph}{Generating SSL certifiates}
+
+If you want to generate SSL certificates you can use the helper script:
+
+\begin{verbatim}
+$ sudo ./create_certificate \
+    --environment letsencrypt \
+    --email <YOUR-EMAIL> \\
+    --domain <YOUR-DOMAIN>
+\end{verbatim}
+
+For the parameter \texttt{-\/-environment}, ``\emph{local}'' is also a
+valid value. In that case, the certificate is generated only for usage
+on localhost and is self-signed. After generating the certificate you
+have to adjust \emph{wendzelnntpd.conf} (check
+Section~\protect\hyperlink{network-settings}{3.2}) to activate TLS
+(configuration option \emph{enable-tls})). The paths for certificate and
+server key can stay as they are.
+
+~
+
+\hypertarget{installing-wendzelnntpd}{%
+\subparagraph*{Installing WendzelNNTPd}\label{installing-wendzelnntpd}}
+\addcontentsline{toc}{subparagraph}{Installing WendzelNNTPd}
+
+To install WendzelNNTPd on your system, you need superuser access. Run
+\textbf{make install} to install it to the default location
+\emph{/usr/local/*}.
+
+\begin{verbatim}
+$ sudo make install
+\end{verbatim}
+
+\textbf{Please Note (Upgrades):} Run \textbf{sudo make upgrade} instead
+of \textbf{sudo make install} for an upgrade. Please
+cf.~Section~\protect\hyperlink{Ch:Upgrade}{{[}Ch:Upgrade{]}}
+(Upgrading).
+
+\textbf{Please Note (MySQL):} \emph{If you plan to run MySQL}, then no
+database was set up during `make install'. Please refer to
+Section~\protect\hyperlink{Ch:Config}{{[}Ch:Config{]}} (Basic
+Configuration) to learn how to generate the MySQL database.
+
+\hypertarget{init-script-for-automatic-startup}{%
+\subsubsection{Init Script for Automatic
+Startup}\label{init-script-for-automatic-startup}}
+
+There is an init script in the directory scripts/startup. It uses the
+usual parameters like ``start'', ``stop'' and ``restart''.
+
+\hypertarget{unofficial-note-mac-os-x}{%
+\subsection{Unofficial Note: Mac OS X}\label{unofficial-note-mac-os-x}}
+
+A user reported WendzelNNTPd-2.0.0 is installable under Mac OS X 10.5.8.
+The only necessary change was to add the flag
+``\texttt{-arch\ x86\_64}'' to compile the code on a 64 bit system.
+However, I never tried to compile WendzelNNTPd on a Mac.
+
+\hypertarget{windows}{%
+\subsection{Windows}\label{windows}}
+
+Not supported.
+
+\hypertarget{basic-configuration-1}{%
+\section{Basic Configuration}\label{basic-configuration-1}}
+
+\protect\hypertarget{Ch:Config}{}{}
+
+This chapter will explain how to configure WendzelNNTPd after
+installation.
+
+\textbf{Note:} The configuration file for WendzelNNTPd is named
+\emph{/usr/local/etc/wendzelnntpd.conf}. The format of the configuration
+file should be self-explanatory and the default configuration file
+includes many comments which will help you to understand its content.
+
+\textbf{Note:} On *nix-like operating systems the default installation
+path is \emph{/usr/local/*}, i.e., the configuration file of
+WendzelNNTPd will be \emph{/usr/local/etc/wendzelnntpd.conf}, and the
+binaries will be placed in \emph{/usr/local/sbin}.
+
+\hypertarget{choosing-a-database-engine-1}{%
+\subsection{Choosing a database
+engine}\label{choosing-a-database-engine-1}}
+
+The first and most important step is to choose a database engine. You
+can use either SQLite3 (this is the default case and easy to use, but
+not suitable for larger systems with many thousand postings or users) or
+MySQL (which is the more advaned solution, but also a little bit more
+complicated to realize). By default, WendzelNNTPd is configured for
+SQLite3 and is ready to run. If you want to keep this setting, you do
+not have to read this section.
+
+\hypertarget{modifying-wendzelnntpd.conf-1}{%
+\subsubsection{Modifying
+wendzelnntpd.conf}\label{modifying-wendzelnntpd.conf-1}}
+
+In the configuration file you will find a parameter called
+\textbf{database-engine}. You can choose to use either MySQL or SQLite
+as the backend storage system by appending either \textbf{sqlite} or
+\textbf{mysql}. Experimental support for PostgreSQL can be activiated
+with \textbf{postgres}.
+
+\begin{verbatim}
+database-engine mysql
+\end{verbatim}
+
+If you choose to use MySQL then you will also need to specify the user
+and password which WendzelNNTPd must use to connect to the MySQL server.
+If your server does not run on localhost or uses a non-default MySQL
+port then you will have to modify these values too.
+
+\begin{verbatim}
+; Your database hostname (not needed for sqlite3)
+database-server 127.0.0.1
+
+; the database connection port (not needed for sqlite3)
+; Comment out to use the default port of your database engine
+database-port 3306
+
+; Server authentication (not needed for sqlite3)
+database-username mysqluser
+database-password supercoolpass
+\end{verbatim}
+
+\hypertarget{generating-your-database-tables-1}{%
+\subsubsection{Generating your database
+tables}\label{generating-your-database-tables-1}}
+
+Once you have chosen your database backend you will need to create the
+database and the required tables.
+
+\hypertarget{sqlite-1}{%
+\paragraph{SQLite}\label{sqlite-1}}
+
+If you chose SQLite as your database backend then you can skip this step
+as running \textbf{make install} does this for you.
+
+\textbf{Note:} The SQLite database file as well as the posting
+management files will be stored in \emph{/var/spool/news/wendzelnntpd/}.
+
+\hypertarget{mysql-1}{%
+\paragraph{MySQL}\label{mysql-1}}
+
+For MySQL, an SQL script file called \emph{mysql\_db\_struct.sql} is
+included. It creates the WendzelNNTPd database and all the needed
+tables. Use the MySQL console tool to execute the script.
+
+\begin{verbatim}
+$ cd /path/to/your/extracted/wendzelnntpd-archive/
+$ mysql -u YOUR-USER -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 48
+Server version: 5.1.37-1ubuntu5.1 (Ubuntu)
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> source mysql\_db\_struct.sql
+...
+mysql> quit
+Bye
+\end{verbatim}
+
+\hypertarget{postgresql-1}{%
+\paragraph{PostgreSQL}\label{postgresql-1}}
+
+Similarly to MySQL, there is a SQL script file
+(\emph{postgres\_db\_struct.sql}) to create the WendzelNNTPd database.
+Create and setup a new database (and an corresponding user) and use the
+\texttt{psql(1)} command line client to load table and function
+definitions:
+
+\begin{verbatim}
+$ psql --username USER -W wendzelnntpd
+wendzelnntpd=> begin;
+wendzelnntpd=> \i database/postgres_db_struct.sql
+wendzelnntpd=> commit; quit;
+\end{verbatim}
+
+\hypertarget{network-settings-1}{%
+\subsection{Network Settings}\label{network-settings-1}}
+
+For each type of IP address (IPv4 and/or IPv6) you have to define a own
+connector. You can find an example for NNTP over port 119 below.
+
+\begin{verbatim}
+<connector>
+    ;; enables STARTTLS for this port
+    ;enable-starttls
+    port        119
+    listen      127.0.0.1
+    ;; configure SSL server certificate (required)
+    ;tls-server-certificate "/usr/local/etc/ssl/server.crt"
+    ;; configure SSL private key (required)
+    ;tls-server-key "/usr/local/etc/ssl/server.key"
+    ;; configure SSL CA certificate (required)
+    ;tls-ca-certificate "/usr/local/etc/ssl/ca.crt"
+    ;; configure TLS ciphers for TLSv1.3
+    ;tls-cipher-suites "TLS_AES_128_GCM_SHA256"
+    ;; configure TLS ciphers for TLSv1.1 and TLSv1.2
+    ;tls-ciphers "ALL:!COMPLEMENTOFDEFAULT:!eNULL"
+    ;; configure allowed TLS version (1.0-1.3)
+    ;tls-version "1.2-1.3"
+    ;; possibility to force the client to authenticate 
+    ;;with client certificate (none | optional | require)
+    ;tls-verify-client "required"
+    ;; define depth for checking client certificate
+    ;tls-verify-client-depth 0
+    ;; possibility to use certificate revocation list (none | leaf | chain)
+    ;tls-crl "none"
+    ;tls-crl-file "/usr/local/etc/ssl/ssl.crl"
+</connector>
+\end{verbatim}
+
+To use dedicated TLS with NNTP (SNNTP) you can define another connector.
+The example below is for SNNTP over port 563.
+
+\begin{verbatim}
+<connector>
+    ;; enables TLS for this port
+    ;enable-tls
+    port        563
+    listen      127.0.0.1
+    ;; configure SSL server certificate (required)
+    ;tls-server-certificate "/usr/local/etc/ssl/server.crt"
+    ;; configure SSL private key (required)
+    ;tls-server-key "/usr/local/etc/ssl/server.key"
+    ;; configure SSL CA certificate (required)
+    ;tls-ca-certificate "/usr/local/etc/ssl/ca.crt"
+    ;; configure TLS ciphers for TLSv1.3
+    ;tls-cipher-suites "TLS_AES_128_GCM_SHA256"
+    ;; configure TLS ciphers for TLSv1.1 and TLSv1.2
+    ;tls-ciphers "ALL:!COMPLEMENTOFDEFAULT:!eNULL"
+    ;; configure allowed TLS version (1.0-1.3)
+    ;tls-version "1.2-1.3"
+    ;; possibility to force the client to authenticate 
+    ;;with client certificate (none | optional | require)
+    ;tls-verify-client "required"
+    ;; define depth for checking client certificate
+    ;tls-verify-client-depth 0
+    ;; possibility to use certificate revocation list (none | leaf | chain)
+    ;tls-crl "none"
+    ;tls-crl-file "/usr/local/etc/ssl/ssl.crl"
+</connector>
+\end{verbatim}
+
+The configuration options \emph{tls-server-certificate},
+\emph{tls-server-key} and \emph{tls-ca-certificate} are required for
+using TLS or STARTTLS with NNTP. All other TLS-related options are
+optional. More examples are in the existing \emph{wendzelnntpd.conf}
+file.
+
+\hypertarget{setting-the-allowed-size-of-postings-1}{%
+\subsection{Setting the Allowed Size of
+Postings}\label{setting-the-allowed-size-of-postings-1}}
+
+To change the maximum size of a post to be accepted by the server,
+change the variable \textbf{max-size-of-postings}. The value must be set
+in Bytes and the default value is 20971520 (20 MBytes).
+
+\begin{verbatim}
+max-size-of-postings 20971520
+\end{verbatim}
+
+\hypertarget{verbose-mode-1}{%
+\subsection{Verbose Mode}\label{verbose-mode-1}}
+
+If you have any problems running WendzelNNTPd or if you simply want more
+information about what is happening, you can uncomment the
+\textbf{verbose-mode} line.
+
+\begin{verbatim}
+; Uncomment 'verbose-mode' if you want to find errors or if you
+; have problems with the logging subsystem. All log strings are
+; written to stderr too, if verbose-mode is set. Additionally all
+; commands sent by clients are written to stderr too (but not to
+; logfile)
+verbose-mode
+\end{verbatim}
+
+\hypertarget{security-settings-1}{%
+\subsection{Security Settings}\label{security-settings-1}}
+
+\hypertarget{authentication-and-access-control-lists-acl-1}{%
+\subsubsection{Authentication and Access Control Lists
+(ACL)}\label{authentication-and-access-control-lists-acl-1}}
+
+WendzelNNTPd contains an extensive access control subsystem. If you want
+to only allow authenticated users to access the server, you should
+uncomment \textbf{use-authentication}. This gives every authenticated
+user access to each newsgroup.
+
+\begin{verbatim}
+; Activate authentication
+use-authentication
+\end{verbatim}
+
+If you need a slightly more advanced authentication system, you can
+activate Access Control Lists (ACL) by uncommenting \textbf{use-acl}.
+This activates the support for Role-based ACL too.
+
+\begin{verbatim}
+; If you activated authentication, you can also activate access
+; control lists (ACL)
+use-acl
+\end{verbatim}
+
+\hypertarget{anonymized-message-id-1}{%
+\subsubsection{Anonymized Message-ID}\label{anonymized-message-id-1}}
+
+By default, WendzelNNTPd makes a user's hostname or IP address part of
+new message IDs when a user sends a post using the NNTP POST command. If
+you do not want that, you can force WendzelNNTPd not to do so by
+uncommenting \textbf{enable-anonym-mids}, which enables anonymized
+message IDs.
+
+\begin{verbatim}
+; This prevents that IPs or Hostnames will become part of the
+; message ID generated by WendzelNNTPd what is the default case.
+; Uncomment it to enable this feature.
+enable-anonym-mids
+\end{verbatim}
+
+\hypertarget{changing-the-default-salt-for-password-hashing-1}{%
+\subsubsection{Changing the Default Salt for Password
+Hashing}\label{changing-the-default-salt-for-password-hashing-1}}
+
+When uncommenting the keyword \textbf{hash-salt}, the default salt value
+that is used to enrich the password hashes can be changed. Please note
+that you have to define the salt \emph{before} you set-up the first
+password since it will otherwise be stored hashed using an old salt,
+rendering it unusable. For this reason, it is necessary to define your
+salt right after running \textbf{make install} (or at least before the
+first creation of NNTP user accounts).
+
+\begin{verbatim}
+; This keyword defines a salt to be used in conjunction with the
+; passwords to calculate the cryptographic hashes. The salt must
+; be in the form [a-zA-Z0-9.:\/-_]+.
+; ATTENTION: If you change the salt after passwords have been
+; stored, they will be rendered invalid! If you comment out
+; hash-salt, then the default hash salt defined in the source
+; code will be used.
+hash-salt 0.hG4//3baA-::_\
+\end{verbatim}
+
+WendzelNNTPd applies the SHA-2 hash algorithm using a 256 bit hash
+value. Please also note that the final hash is calculated using a string
+that combines salt, username and password as an input to prevent
+password-identification attacks when an equal password is used by
+multiple users. However, utilizing the username is less secure than
+having a completely separate salt for every password.\footnote{Patches
+  are appreciated!}
+
+\hypertarget{encrypted-communication-tls-1}{%
+\subsubsection{Encrypted communication
+(TLS)}\label{encrypted-communication-tls-1}}
+
+Please look at section \protect\hyperlink{network-settings}{3.2} when
+you want to use encryption over TLS.
+
+\hypertarget{starting-and-running-wendzelnntpd}{%
+\section{Starting and Running
+WendzelNNTPd}\label{starting-and-running-wendzelnntpd}}
+
+\hypertarget{starting-the-service}{%
+\subsection{Starting the Service}\label{starting-the-service}}
+
+Once your WendzelNNTPd installation has been configured, you can run the
+server (in the default case you need superuser access to do that since
+this is required to bind WendzelNNTPd to the default NNTP port 119) by
+starting \textbf{/usr/local/sbin/wendzelnntpd}.
+
+\begin{verbatim}
+$ /usr/local/sbin/wendzelnntpd 
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+\end{verbatim}
+
+\textbf{Note (Daemon Mode):} If you want to run WendzelNNTPd as a
+background daemon process on *nix-like operating systems, you should use
+the parameter \textbf{-d}.
+
+\hypertarget{stopping-and-restarting-the-service}{%
+\subsection{Stopping and Restarting the
+Service}\label{stopping-and-restarting-the-service}}
+
+The server can be stopped by terminating its process:
+
+\begin{verbatim}
+$ pkill wendzelnntpd
+\end{verbatim}
+
+The server has a handler for the termination signal that allows to
+safely shutdown using \textbf{pkill} or \textbf{kill}.
+
+To restart the service, terminate and start the service.
+
+\hypertarget{automating-start-stop-and-restart}{%
+\subsubsection{Automating Start, Stop, and
+Restart}\label{automating-start-stop-and-restart}}
+
+The script \textbf{init.d\_script} in the directory
+\emph{scripts/startup} of the tarball can be used to start, restart, and
+stop WendzelNNTPd. It is a standard \emph{init.d} script for Linux
+operating systems that can usually be copied to \emph{/etc/init.d} (it
+must be executable).
+
+\begin{verbatim}
+$ cp scripts/startup/init.d_script /etc/init.d/wendzelnntpd
+$ chmod +x /etc/init.d/wendzelnntpd
+\end{verbatim}
+
+\textbf{Note:} Please note that some operating systems use different
+directories than \emph{/etc/init.d} or other startup script formats. In
+such cases, the script works nevertheless but should simply be installed
+to \emph{/usr/local/sbin} instead.
+
+To start, stop, and restart WendzelNNTPd, the following commands can be
+used afterwards:
+
+\begin{verbatim}
+$ /etc/init.d/wendzelnntpd start
+Starting WendzelNNTPd ... done.
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+
+$ /etc/init.d/wendzelnntpd restart
+Stopping WendzelNNTPd ... done.
+Starting WendzelNNTPd ... done.
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+
+$ /etc/init.d/wendzelnntpd stop
+Stopping WendzelNNTPd ... done.
+\end{verbatim}
+
+\hypertarget{administration-tool-wendzelnntpadm}{%
+\subsection{Administration Tool
+`wendzelnntpadm'}\label{administration-tool-wendzelnntpadm}}
+
+Use the command line tool \textbf{wendzelnntpadm} to configure users,
+roles and newsgroups of your WendzelNNTPd installation. To get an
+overview of supported commands, run ``wendzelnntpadm help'':
+
+\begin{verbatim}
+$ wendzelnntpadm help
+usage: wendzelnntpd <command> [parameters]
+*** Newsgroup Administration:
+ <listgroups>
+ <addgroup | modgroup> <newsgroup> <posting-allowed-flag (y/n)>
+ <delgroup> <newsgroup>
+*** User Administration:
+ <listusers>
+ <adduser> <username> [<password>]
+ <deluser> <username>
+*** ACL (Access Control List) Administration:
+ <listacl>
+ <addacluser | delacluser> <username> <newsgroup>
+ <addaclrole | delaclrole> <role>
+ <rolegroupconnect | rolegroupdisconnect> <role> <newsgroup>
+ <roleuserconnect | roleuserdisconnect> <role> <username>
+\end{verbatim}
+
+\hypertarget{creatinglistingdeleting-newsgroups}{%
+\subsection{Creating/Listing/Deleting
+Newsgroups}\label{creatinglistingdeleting-newsgroups}}
+
+You can either list, create or delete newsgroups using
+\textbf{wendzelnntpadm}.
+
+\hypertarget{listing-existing-newsgroups}{%
+\subsubsection{Listing existing
+newsgroups}\label{listing-existing-newsgroups}}
+
+\begin{verbatim}
+$ wendzelnntpadm listgroups
+Newsgroup, Low-, High-Value, Posting-Flag
+-----------------------------------------
+alt.test 10 1 y
+mgmt.talk 1 1 y
+secret.project-x 20 1 y
+done.
+\end{verbatim}
+
+\hypertarget{creating-a-new-newsgroup}{%
+\subsubsection{Creating a new
+newsgroup}\label{creating-a-new-newsgroup}}
+
+To create a new newsgroup run the following command:
+
+\begin{verbatim}
+$ wendzelnntpadm addgroup my.cool.group y
+Newsgroup my.cool.group does not exist. Creating new group.
+done.
+\end{verbatim}
+
+You can also change the ``posting allowed'' flag of a newsgroup:
+
+\begin{verbatim}
+$ wendzelnntpadm modgroup my.cool.group y
+Newsgroup my.cool.group exists: okay.
+done.
+$ wendzelnntpadm modgroup my.cool.group n
+Newsgroup my.cool.group exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{deleting-a-newsgroup}{%
+\subsubsection{Deleting a newsgroup}\label{deleting-a-newsgroup}}
+
+\begin{verbatim}
+$ wendzelnntpadm delgroup my.cool.group
+Newsgroup my.cool.group exists: okay.
+Clearing association class ... done
+Clearing ACL associations of newsgroup my.cool.group... done
+Clearing ACL role associations of newsgroup my.cool.group... done
+Deleting newsgroup my.cool.group itself ... done
+Cleanup: Deleting postings that do not belong to an existing newsgroup ... done
+done.
+\end{verbatim}
+
+\hypertarget{user-accounts-administration}{%
+\subsection{User Accounts
+Administration}\label{user-accounts-administration}}
+
+The easiest way to give only some people access to your server is to
+create user accounts (please make sure you activated authentication in
+your configuration file). You can add, delete and list all users.
+
+\hypertarget{listing-users-and-passwords}{%
+\subsubsection{Listing Users (and
+Passwords)}\label{listing-users-and-passwords}}
+
+This command always prints the (hashed) password of the users:
+
+\begin{verbatim}
+$ wendzelnntpadm listusers
+Username, Password
+------------------
+developer1, wegerhgrhtrthjtzj
+developer2, erghnrehhnht
+manager1, wegergergrhth
+manager2, thnthnrothnht
+swendzel, lalalegergreg
+swendzel2, 94j5z5jh5th
+swendzel3, lalalalala
+swendzel4, wegwegwegwegweg
+done.
+\end{verbatim}
+
+\hypertarget{creating-a-new-user}{%
+\subsubsection{Creating a new user}\label{creating-a-new-user}}
+
+You can either enter the password as additional parameter (useful for
+scripts that create users automatically) ...
+
+\begin{verbatim}
+$ wendzelnntpadm adduser UserName HisPassWord
+User UserName does currently not exist: okay.
+done.
+\end{verbatim}
+
+... or you can type it using the prompt (in this case the input is
+shadowed):
+
+\begin{verbatim}
+$ wendzelnntpadm adduser UserName2
+Enter new password for this user (max. 100 chars):
+User UserName2 does currently not exist: okay.
+done.
+\end{verbatim}
+
+\textbf{Please Note:} A password must include at least 8 characters and
+may not include more than 100 characters.
+
+\hypertarget{deleting-an-existing-user}{%
+\subsubsection{Deleting an existing
+user}\label{deleting-an-existing-user}}
+
+\begin{verbatim}
+$ wendzelnntpadm deluser UserName2
+User UserName2 exists: okay.
+Clearing ACL associations of user UserName2... done
+Clearing ACL role associations of user UserName2... done
+Deleting user UserName2 from database ... done
+done.
+\end{verbatim}
+
+\hypertarget{access-control-list-administration-in-case-the-standard-nntp-authentication-is-not-enough}{%
+\subsection{Access Control List Administration (in case the standard
+NNTP authentication is not
+enough)}\label{access-control-list-administration-in-case-the-standard-nntp-authentication-is-not-enough}}
+
+Welcome to the advanced part of WendzelNNTPd. WendzelNNTPd includes a
+powerful role based access control system. You can either only use
+normal access control lists where you can configure which user will have
+access to which newsgroup. Or you can use the advanced role system: You
+can add users to roles (e.g., the user ``boss99'' to the role
+``management'') and give a role access to a group (e.g., role
+``management'' shall have access to ``discuss.management'').
+
+\textbf{Note:} Please note that you must activate the ACL feature in
+your configuration file to use it.
+
+\textbf{Note:} To see \emph{all} data related to the ACL subsystem of
+your WendzelNNTPd installation, simply use ``wendzelnntpadm listacl''.
+
+\hypertarget{invisible-newsgroups}{%
+\subsubsection{Invisible Newsgroups}\label{invisible-newsgroups}}
+
+WendzelNNTPd includes a feature called ``Invisible Newsgroups'' which
+means that a user without access to a newsgroup will neither see the
+newsgroup in the list of newsgroups, nor will he be able to post to such
+a newsgroup or will be able to read it.
+
+\hypertarget{simple-access-control}{%
+\subsubsection{Simple Access Control}\label{simple-access-control}}
+
+We start with the simple access control component where you can define
+which user will have access to which newsgroup.
+
+\hypertarget{giving-a-user-access-to-a-newsgroup}{%
+\paragraph{Giving a user access to a
+newsgroup}\label{giving-a-user-access-to-a-newsgroup}}
+
+\begin{verbatim}
+$ wendzelnntpadm addacluser swendzel alt.test
+User swendzel exists: okay.
+Newsgroup alt.test exists: okay.
+done.
+$ wendzelnntpadm listacl
+List of roles in database:
+Roles
+-----
+
+Connections between users and roles:
+Role, User
+----------
+
+Username, Has access to group
+-----------------------------
+swendzel, alt.test
+
+Role, Has access to group
+-------------------------
+done.
+\end{verbatim}
+
+\hypertarget{removing-a-users-access-to-a-newsgroup}{%
+\paragraph{Removing a user's access to a
+newsgroup}\label{removing-a-users-access-to-a-newsgroup}}
+
+\begin{verbatim}
+$ wendzelnntpadm delacluser swendzel alt.test
+User swendzel exists: okay.
+Newsgroup alt.test exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{adding-and-removing-acl-roles}{%
+\subsubsection{Adding and Removing ACL
+Roles}\label{adding-and-removing-acl-roles}}
+
+If you have many users, some of them should have access to the same
+newsgroup (e.g., the developers of a new system should have access to
+the development newsgroup of the system). With roles you do not have to
+give every user explicit access to such a group. Instead you add the
+users to a role and give the role access to the group. (One advantage is
+that you can easily give the complete role access to another group with
+only one command instead of adding each of its users to the list of
+people who have access to the new group).
+
+In the following examples, we give the users ``developer1'',
+``developer2'', and ``developer3'' access to the development role of
+``project-x'' and connect their role to the newsgroups
+``project-x.discussion'' and ``project-x.support''. To do so, we create
+the three users and the two newsgroups first:
+
+\begin{verbatim}
+$ wendzelnntpadm adduser developer1
+Enter new password for this user (max. 100 chars):
+User developer1 does currently not exist: okay.
+done.
+$ wendzelnntpadm adduser developer2
+Enter new password for this user (max. 100 chars):
+User developer2 does currently not exist: okay.
+done.
+$ wendzelnntpadm adduser developer3
+Enter new password for this user (max. 100 chars):
+User developer3 does currently not exist: okay.
+done.
+
+$ wendzelnntpadm addgroup project-x.discussion y
+Newsgroup project-x.discussion does not exist. Creating new group.
+done.
+$ wendzelnntpadm addgroup project-x.support y
+Newsgroup project-x.support does not exist. Creating new group.
+done.
+\end{verbatim}
+
+\hypertarget{creating-an-acl-role}{%
+\paragraph{Creating an ACL Role}\label{creating-an-acl-role}}
+
+Before you can add users to a role and before you can connect a role to
+a newsgroup, you have to create an ACL \emph{role} (you have to choose
+an ASCII name for it). In this example, the group is called
+``project-x''.
+
+\begin{verbatim}
+$ wendzelnntpadm addaclrole project-x
+Role project-x does not exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{deleting-an-acl-role}{%
+\paragraph{Deleting an ACL Role}\label{deleting-an-acl-role}}
+
+You can delete an ACL role by using ``delaclrole'' instead of
+``addaclrole'' like in the example above.
+
+\hypertarget{connecting-and-disconnecting-users-withfrom-roles}{%
+\subsubsection{Connecting and Disconnecting Users with/from
+Roles}\label{connecting-and-disconnecting-users-withfrom-roles}}
+
+To add (connect) or remove (disconnect) a user to/from a role, you need
+to use the admin tool too.
+
+\hypertarget{connecting-a-user-with-a-role}{%
+\paragraph{Connecting a User with a
+Role}\label{connecting-a-user-with-a-role}}
+
+The second parameter (``project-x'') is the role name and the third
+parameter (``developer1'') is the username. Here we add our three
+developer users from the example above to the group project-x:
+
+\begin{verbatim}
+$ wendzelnntpadm roleuserconnect project-x developer1
+Role project-x exists: okay.
+User developer1 exists: okay.
+Connecting role project-x with user developer1 ... done
+done.
+$ wendzelnntpadm roleuserconnect project-x developer2
+Role project-x exists: okay.
+User developer2 exists: okay.
+Connecting role project-x with user developer2 ... done
+done.
+$ wendzelnntpadm roleuserconnect project-x developer3
+Role project-x exists: okay.
+User developer3 exists: okay.
+Connecting role project-x with user developer3 ... done
+done.
+\end{verbatim}
+
+\hypertarget{disconnecting-a-user-from-a-role}{%
+\paragraph{Disconnecting a User from a
+Role}\label{disconnecting-a-user-from-a-role}}
+
+\begin{verbatim}
+$ wendzelnntpadm roleuserdisconnect project-x developer1
+Role project-x exists: okay.
+User developer1 exists: okay.
+Dis-Connecting role project-x from user developer1 ... done
+done.
+\end{verbatim}
+
+\hypertarget{connecting-and-disconnecting-roles-withfrom-newsgroups}{%
+\subsubsection{Connecting and Disconnecting Roles with/from
+Newsgroups}\label{connecting-and-disconnecting-roles-withfrom-newsgroups}}
+
+Even if a role is connected with a set of users, it is still useless
+until you connect the role with a newsgroup.
+
+\hypertarget{connecting-a-role-with-a-newsgroup}{%
+\paragraph{Connecting a Role with a
+Newsgroup}\label{connecting-a-role-with-a-newsgroup}}
+
+To connect a role with a newsgroup, we have to use the command line tool
+for a last time (the 2nd parameter is the role, and the 3rd parameter is
+the name of the newsgroup). Here we connect our ``project-x'' role to
+the two newsgroups ``project-x.discussion'' and ``project-x.support'':
+
+\begin{verbatim}
+$ wendzelnntpadm rolegroupconnect project-x project-x.discussion
+Role project-x exists: okay.
+Newsgroup project-x.discussion exists: okay.
+Connecting role project-x with newsgroup project-x.discussion ... done
+done.
+$ wendzelnntpadm rolegroupconnect project-x project-x.support
+Role project-x exists: okay.
+Newsgroup project-x.support exists: okay.
+Connecting role project-x with newsgroup project-x.support ... done
+done.
+\end{verbatim}
+
+\hypertarget{disconnecting-a-role-from-a-newsgroup}{%
+\paragraph{Disconnecting a Role From a
+Newsgroup}\label{disconnecting-a-role-from-a-newsgroup}}
+
+Disconnecting is done like in the example above but you have to use the
+command ``rolegroup\textbf{dis}connect'' instead of
+``rolegroupconnect''.
+
+\hypertarget{listing-your-whole-acl-configuration-again}{%
+\subsubsection{Listing Your Whole ACL Configuration
+Again}\label{listing-your-whole-acl-configuration-again}}
+
+Like mentioned before, you can use the command ``listacl'' to list your
+whole ACL configuration (except the list of users that will be listed by
+the command ``listusers'').
+
+\begin{verbatim}
+$ wendzelnntpadm listacl
+List of roles in database:
+Roles
+-----
+project-x
+
+Connections between users and roles:
+Role, User
+----------
+project-x, developer1
+project-x, developer2
+project-x, developer3
+
+Username, Has access to group
+-----------------------------
+swendzel, alt.test
+
+Role, Has access to group
+-------------------------
+project-x, project-x.discussion
+project-x, project-x.support
+done.
+\end{verbatim}
+
+\hypertarget{saving-time}{%
+\paragraph{Saving time}\label{saving-time}}
+
+As mentioned above, you can safe time by using roles. For instance, if
+you add a new developer to the system, and the developer should have
+access to the two groups ``project-x.discussion'' and
+``project-x.support'', you do not have to assign the user to both (or
+even more) groups by hand. Instead, you just add the user to the role
+``project-x'' that is already connected to both groups.
+
+If you want to give all developers access to the group
+``project-x.news'', you also do not have to connect every developer with
+the project. Instead, you just connect the role with the newsgroup, what
+is one command instead of \(n\) commands. Of course, this time-saving
+concept also works if you want to delete a user.
+
+\hypertarget{hardening}{%
+\subsection{Hardening}\label{hardening}}
+
+Besides the already mentioned authentication, ACL and RBAC features, the
+security of the server can be improved by putting WendzelNNTPd in a
+\emph{chroot} environment or letting it run under an unprivileged user
+account (the user then needs write access to
+\emph{/var/spool/news/wendzelnntpd} and read access to
+(\emph{/usr/local)/etc/wendzelnntpd.conf}). An unprivileged user under
+Unix-like systems is also not able to create a listen socket on the
+default NNTP port (119) since all ports up to 1023 are
+usually\footnote{Some *nix-like systems may have a different range of
+  privileged ports.} reserved. This means that the server should use a
+port \(\geq\)1024 if it is started by a non-root user.
+
+Please also note that WendzelNNTPd can be easily identified due to its
+welcoming `banner' (desired code `200' message of NNTP). Tools such as
+\texttt{nmap} provide rules to identify WendzelNNTPd and its version
+this way. Theoretically, this could be changed by a slight code
+modification (welcome message, HELP output and other components that
+make the server identifiable). However, I do not recommend this as it is
+just a form of `security by obscurity'.
+
+\hypertarget{development-1}{%
+\section{Development}\label{development-1}}
+
+For development purposes you can start WendzelNNTPd on your host system.
+If you are using an unsupported operating system or just not run
+WenzdelNNTPd on your host system, you can use the provided Dockerfiles
+to run WendzelNNTPd in a Docker container.
+
+\hypertarget{initial-setup-1}{%
+\subsubsection{Initial setup}\label{initial-setup-1}}
+
+When you are on a UNIX-based system (like macOS) you can use the
+provided make commands:
+
+\begin{verbatim}
+$ make docker-build
+$ make docker-run
+\end{verbatim}
+
+To stop the Docker container you can use the following command:
+
+\begin{verbatim}
+$ make docker-stop
+\end{verbatim}
+
+If you are not on a UNIX-based system (like Windows) use the following
+native docker commands:
+
+\begin{verbatim}
+$ docker build -f ./docker/Dockerfile -t wendzelnntpd:latest .
+$ docker run --name wendzelnntpd --rm -it -p 118:118 -p 119:119 -p 563:563 -p 564:564 -v ${PWD}:/wendzelnntpd -v wendzelnntpd_data:/var/spool/news/wendzelnntpd wendzelnntpd:latest
+\end{verbatim}
+
+To stop the Docker container you can use the following command:
+
+\begin{verbatim}
+$ docker stop wendzelnntpd
+\end{verbatim}
+
+\hypertarget{test-new-code-1}{%
+\subsubsection{Test new code}\label{test-new-code-1}}
+
+The container is build without code included. The code is automatically
+mounted as volume into the container. After each change of source code,
+the application is compiled again.
+
+\hypertarget{upgrading}{%
+\section{Upgrading}\label{upgrading}}
+
+\protect\hypertarget{Ch:Upgrade}{}{}
+
+\hypertarget{upgrade-fom-version-2.1.y-to-2.2.x}{%
+\subsection{Upgrade fom version 2.1.y to
+2.2.x}\label{upgrade-fom-version-2.1.y-to-2.2.x}}
+
+Please stop WendzelNNTPd and check the \emph{wendzelnntpd.conf}. There
+is a new configuration style that breaks parts of the previous
+configuration style (especially due to the introduction of
+``connectors'').
+
+\hypertarget{upgrade-from-version-2.1.x-to-2.1.y}{%
+\subsection{Upgrade from version 2.1.x to
+2.1.y}\label{upgrade-from-version-2.1.x-to-2.1.y}}
+
+Same as upgrading from v.2.0.x to v.2.0.y, see Section
+\protect\hyperlink{20xto20y}{6.4}.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-2.0.x-to-2.1.y}{%
+\subsection{Upgrade from version 2.0.x to
+2.1.y}\label{upgrade-from-version-2.0.x-to-2.1.y}}
+
+Please follow the upgrade instructions for upgrading from 2.0.x to 2.0.y
+below. However, once you use cryptographic hashes in your
+\emph{wendzelnntpd.conf}, your previous passwords will not work anymore,
+i.e., you need to reset all passwords or deactivate the hashing feature.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-2.0.x-to-2.0.y-20xto20y}{%
+\subsection{Upgrade from version 2.0.x to 2.0.y
+\{\#20xto20y\}}\label{upgrade-from-version-2.0.x-to-2.0.y-20xto20y}}
+
+Stop WendzelNNTPd if it is currently running. Install WendzelNNTPd as
+described but run \textbf{make upgrade} instead of \textbf{make
+install}. Afterwards, start WendzelNNTPd again.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-1.4.x-to-2.0.x}{%
+\subsection{Upgrade from version 1.4.x to
+2.0.x}\label{upgrade-from-version-1.4.x-to-2.0.x}}
+
+\textbf{Acknowledgement:} I would like to thank Ann from Href.com for
+helping a lot with finding out how to upgrade from 1.4.x to 2.0.x!
+
+~
+
+An upgrade from version 1.4.x was not foreseen due to the limited
+available time I have for the development. However, here is a dirty
+hack:
+
+\hypertarget{preparation-step}{%
+\subparagraph*{Preparation Step:}\label{preparation-step}}
+\addcontentsline{toc}{subparagraph}{Preparation Step:}
+
+You \textbf{need to create a backup of your existing installation
+first}, at least everything from \textbf{/var/spool/news/wendzelnntpd}
+as you will need all these files later. \textbf{Perform the following
+steps on your own risk -- it is possible that they do not work on your
+system as only two WendzelNNTPd installations were tested!}
+
+\hypertarget{first-step}{%
+\subparagraph*{First Step:}\label{first-step}}
+\addcontentsline{toc}{subparagraph}{First Step:}
+
+Install Wendzelnntpd-2.x on a Linux system (Windows is not supported
+anymore). This requires some libraries and tools.
+
+Under \emph{Ubuntu} they all come as packages:
+
+\begin{verbatim}
+$ sudo apt-get install libmysqlclient-dev libsqlite3-dev flex bison sqlite3
+\end{verbatim}
+
+Under \emph{CentOS} they come as packages as well:
+
+\begin{verbatim}
+$ sudo yum install make gcc bison flex sqlite-devel
+\end{verbatim}
+
+\emph{Other} operating systems should provide the same or similar
+packages/ports.
+
+Run \textbf{MYSQL=NO ./configure}, followed by \textbf{make}, and
+\textbf{sudo make install}. This will compile, build and install
+WendzelNNTPd without MySQL support as you only rely on SQLite3 from
+v.1.4.x (and it would be significantly more difficult to bring the
+SQLite database content to a MySQL database).
+
+\hypertarget{second-step}{%
+\subparagraph*{Second Step:}\label{second-step}}
+\addcontentsline{toc}{subparagraph}{Second Step:}
+
+Please make sure WendzelNNTPd-2 is configured in a way that we can
+*hopefully* make it work with your own database file. Therefore, in the
+configuration file \textbf{/usr/local/etc/wendzelnntpd.conf} make sure
+that WendzelNNTPd uses sqlite3 instead of mysql:
+
+\begin{verbatim}
+database-engine sqlite3
+\end{verbatim}
+
+\hypertarget{third-step}{%
+\subparagraph*{Third Step:}\label{third-step}}
+\addcontentsline{toc}{subparagraph}{Third Step:}
+
+Now comes the tricky part. The install command should have created
+\textbf{/var/spool/news/wendzelnntpd/usenet.db}. However, it is an empty
+usenet database file in the new format. Now REPLACE that file with the
+file you use on your existing WendzelNNTPd installation, which uses the
+old 1.4.x format. Also copy all of your old \textbf{cdp*} files and the
+old \textbf{nextmsgid} file from your Windows system/from your backup
+directory to \textbf{/var/spool/news/wendzelnntpd/}.
+
+The following step is a very dirty hack but I hope it works for you. It
+is not 100\% perfect as important table columns are then still of the
+type `STRING' instead of the type `TEXT'!
+
+Load the sqlite3 tool with your replaced database file:
+
+\begin{verbatim}
+$ sudo sqlite3 /var/spool/news/wendzelnntpd/usenet.db
+\end{verbatim}
+
+This will open the new file in editing mode. We now add the tables which
+are not part of v.1.4.x to your existing database file. Therefore enter
+the following commands:
+
+\begin{verbatim}
+CREATE TABLE roles (role TEXT PRIMARY KEY);
+CREATE TABLE users2roles (username TEXT, role TEXT, PRIMARY KEY(username, role));
+CREATE TABLE acl_users (username TEXT, ng TEXT, PRIMARY KEY(username, ng));
+CREATE TABLE acl_roles (role TEXT, ng TEXT, PRIMARY KEY(role, ng));
+.quit
+\end{verbatim}
+
+\hypertarget{fix-postings}{%
+\subparagraph*{Fix Postings}\label{fix-postings}}
+\addcontentsline{toc}{subparagraph}{Fix Postings}
+
+You will probably see no post bodies right now if posts are requested by
+your client. Therefore, switch into
+\textbf{/var/spool/news/wendzelnntpd} and run (as superuser) this
+command, it will replace the broken trailings with corrected ones:
+
+\begin{verbatim}
+$ cd /var/spool/news/wendzelnntpd
+$ for filn in `/bin/ls cdp*`; do echo $filn; cat $filn | \
+sed 's/\.\r/.\r\n/' > new;  num=`wc -l new| \
+awk '{$minone=$1-1; print $minone}'` ; \
+head -n $num new > $filn; done
+$
+\end{verbatim}
+
+\hypertarget{last-step-checking-whether-it-works}{%
+\subparagraph*{Last Step (Checking whether it
+works!):}\label{last-step-checking-whether-it-works}}
+\addcontentsline{toc}{subparagraph}{Last Step (Checking whether it
+works!):}
+
+First check, whether the database file is accepted at all:
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listgroups
+\end{verbatim}
+
+It should list all your newsgroups
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listusers
+\end{verbatim}
+
+It should list all existing users. Accordingly
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listacl
+\end{verbatim}
+
+should list all access control entries (which will be empty right now
+but if no error message appears, the related tables are now part of your
+database file!).
+
+~
+
+Now start WendzelNNTPd via \textbf{sudo wendzelnntpd} and try to connect
+with a NNTP client to your WendzelNNTPd and then try reading posts,
+sending new posts and replying to these posts.
+
+If this works, you can now run v2.x on 32bit and 64bit Linux :)
+Congrats, you made it and chances are you are the second user who did
+that. Let me know via e-mail if it worked for you.
+
+\hypertarget{installation-1}{%
+\section{Installation}\label{installation-1}}
+
+This chapter provides a guide on how to install WendzelNNTPd 2.x.
+
+\hypertarget{linuxnixbsd-1}{%
+\subsection{Linux/*nix/BSD}\label{linuxnixbsd-1}}
+
+To install WendzelNNTPd from source you need to download the provided
+archive file (e.g., \emph{wendzelnntpd-2.0.0.tar.gz}) file.\footnote{Some
+  *nix-like systems may have a different range of privileged ports.}
+Extract it and run \textbf{./configure}. Please note that configure
+indicates missing libraries and packages that you may first need to
+install using the package system of your operating system.
+
+\begin{verbatim}
+$ tar -xzf wendzelnntpd-2.0.0.tgz
+$ cd wendzelnntpd
+$ ./configure
+...
+\end{verbatim}
+
+\textbf{Please Note:} \emph{If you wish to compile WITHOUT MySQL or
+WITHOUT SQlite support}, then run \textbf{MYSQL=NO ./configure} or
+\textbf{SQLITE=NO ./configure}, respectively.
+
+~
+
+\textbf{Please Note:} \emph{For FreeBSD/OpenBSD/NetBSD/*BSD: There is no
+MySQL support; you need to use SQLite (i.e., run
+\texttt{MYSQL=NO\ ./configure}). Run \texttt{configure} as well as
+\texttt{make} in the \texttt{bash} shell (under some BSDs you first need
+to install \texttt{bash}).}
+
+~
+
+\textbf{Please Note:} \emph{If you wish to compile WITHOUT TLS support},
+then run \textbf{TLS=NO ./configure}.
+
+~
+
+After \texttt{configure} has finished, run \textbf{make}:
+
+\begin{verbatim}
+$ make
+...
+\end{verbatim}
+
+\hypertarget{generating-ssl-certifiates}{%
+\subparagraph*{Generating SSL
+certifiates}\label{generating-ssl-certifiates}}
+\addcontentsline{toc}{subparagraph}{Generating SSL certifiates}
+
+If you want to generate SSL certificates you can use the helper script:
+
+\begin{verbatim}
+$ sudo ./create_certificate \
+    --environment letsencrypt \
+    --email <YOUR-EMAIL> \\
+    --domain <YOUR-DOMAIN>
+\end{verbatim}
+
+For the parameter \texttt{-\/-environment}, ``\emph{local}'' is also a
+valid value. In that case, the certificate is generated only for usage
+on localhost and is self-signed. After generating the certificate you
+have to adjust \emph{wendzelnntpd.conf} (check
+Section~\protect\hyperlink{network-settings}{{[}network-settings{]}}) to
+activate TLS (configuration option \emph{enable-tls})). The paths for
+certificate and server key can stay as they are.
+
+~
+
+\hypertarget{installing-wendzelnntpd}{%
+\subparagraph*{Installing WendzelNNTPd}\label{installing-wendzelnntpd}}
+\addcontentsline{toc}{subparagraph}{Installing WendzelNNTPd}
+
+To install WendzelNNTPd on your system, you need superuser access. Run
+\textbf{make install} to install it to the default location
+\emph{/usr/local/*}.
+
+\begin{verbatim}
+$ sudo make install
+\end{verbatim}
+
+\textbf{Please Note (Upgrades):} Run \textbf{sudo make upgrade} instead
+of \textbf{sudo make install} for an upgrade. Please
+cf.~Section~\protect\hyperlink{Ch:Upgrade}{{[}Ch:Upgrade{]}}
+(Upgrading).
+
+\textbf{Please Note (MySQL):} \emph{If you plan to run MySQL}, then no
+database was set up during `make install'. Please refer to
+Section~\protect\hyperlink{Ch:Config}{{[}Ch:Config{]}} (Basic
+Configuration) to learn how to generate the MySQL database.
+
+\hypertarget{init-script-for-automatic-startup-1}{%
+\subsubsection{Init Script for Automatic
+Startup}\label{init-script-for-automatic-startup-1}}
+
+There is an init script in the directory scripts/startup. It uses the
+usual parameters like ``start'', ``stop'' and ``restart''.
+
+\hypertarget{unofficial-note-mac-os-x-1}{%
+\subsection{Unofficial Note: Mac OS
+X}\label{unofficial-note-mac-os-x-1}}
+
+A user reported WendzelNNTPd-2.0.0 is installable under Mac OS X 10.5.8.
+The only necessary change was to add the flag
+``\texttt{-arch\ x86\_64}'' to compile the code on a 64 bit system.
+However, I never tried to compile WendzelNNTPd on a Mac.
+
+\hypertarget{windows-1}{%
+\subsection{Windows}\label{windows-1}}
+
+Not supported.
+
+\hypertarget{introduction-1}{%
+\section{Introduction}\label{introduction-1}}
+
+WendzelNNTPd is a tiny but easy to use Usenet server (NNTP server) for
+Linux, *nix and BSD. The server is written in C. For security reasons,
+it is compiled with stack smashing protection by default, if your
+compiler supports that feature.
+
+\hypertarget{features-1}{%
+\subsection{Features}\label{features-1}}
+
+\hypertarget{license-1}{%
+\subsubsection{License}\label{license-1}}
+
+WendzelNNTPd uses the GPLv3 license.
+
+\hypertarget{database-abstraction-layer-1}{%
+\subsubsection{Database Abstraction
+Layer}\label{database-abstraction-layer-1}}
+
+The server contains a database abstraction layer. Currently supported
+database systems are SQlite3 and MySQL (and experimental PostgreSQL
+support). New databases can be easily added.
+
+\hypertarget{security-1}{%
+\subsubsection{Security}\label{security-1}}
+
+WendzelNNTPd contains different security features, the most important
+features are probably Access Control Lists (ACLs) and the Role Based
+Access Control (RBAC) system. ACL and RBAC are described in a own
+chapter. WendzelNNTPd was probably the first Usenet server with support
+for RBAC.
+
+Another feature that was introduced by WendzelNNTPd (and later adopted
+by other servers) are so-called ``invisible newsgroups'': If access
+control is activated, a user without permission to access the newsgroup
+will not be able to see the existence of the newsgroup. In case the user
+knows about the existence of the newsgroup nevertheless, he will not be
+able to post to or read from the newsgroup.
+
+However, \textbf{please note} that the salting for password hashing is
+using SHA-256, but with a global user-definable salt that is
+concatenated with the username and password, rendering it less secure
+than using unique random hashes per password. WendzelNNTPd does support
+TLS v1.0 to v1.3 including STARTTLS!
+
+\hypertarget{auto-prevention-of-double-postings-1}{%
+\subsubsection{Auto-prevention of
+double-postings}\label{auto-prevention-of-double-postings-1}}
+
+In case a user sends a posting that lists the same newsgroup multiple
+times within one post command's ``Newsgroups:'' header tag, the server
+will add it only once to that newsgroup to save memory on the server and
+the time of the readers.
+
+\hypertarget{ipv6-1}{%
+\subsubsection{IPv6}\label{ipv6-1}}
+
+WendzelNNTPd supports IPv6. The server can listen on multiple IP
+addresses as well as multiple ports.
+
+\hypertarget{why-this-is-not-a-perfect-usenet-server-1}{%
+\subsubsection{Why this is not a perfect Usenet
+server}\label{why-this-is-not-a-perfect-usenet-server-1}}
+
+WendzelNNTPd does not implement all NNTP commands, but the (most)
+important ones. Another problem is that the regular expression library
+used is not 100\% compatible with the NNTP matching in commands like
+``XGTITLE''. Another limitation is that WendzelNNTPd cannot share
+messages with other NNTP servers.
+
+\hypertarget{contribute-1}{%
+\subsection{Contribute}\label{contribute-1}}
+
+See the \emph{CONTRIBUTE} file in the tarball.
+
+\hypertarget{history-1}{%
+\subsection{History}\label{history-1}}
+
+The project started in 2004 under the name Xyria:cdpNNTPd, as part of
+the Xyria project that also contained a fast DNS server, called
+Xyria:DNSd. In 2007, I renamed it to WendzelNNTPd and stopped
+development of Xyria:DNSd. Version 1.0.0 was released in 2007, version
+2.0.0 in 2011. Since then I have primarily fixed reported bugs and added
+minor features but the software is still maintained and smaller
+advancements can still be expected. A detailed history can be found in
+the \emph{HISTORY} file in the tarball. Fortunately, several people
+contributed to the code and documentation, see \emph{AUTHORS} file.
+
+\hypertarget{starting-and-running-wendzelnntpd-1}{%
+\section{Starting and Running
+WendzelNNTPd}\label{starting-and-running-wendzelnntpd-1}}
+
+\hypertarget{starting-the-service-1}{%
+\subsection{Starting the Service}\label{starting-the-service-1}}
+
+Once your WendzelNNTPd installation has been configured, you can run the
+server (in the default case you need superuser access to do that since
+this is required to bind WendzelNNTPd to the default NNTP port 119) by
+starting \textbf{/usr/local/sbin/wendzelnntpd}.
+
+\begin{verbatim}
+$ /usr/local/sbin/wendzelnntpd 
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+\end{verbatim}
+
+\textbf{Note (Daemon Mode):} If you want to run WendzelNNTPd as a
+background daemon process on *nix-like operating systems, you should use
+the parameter \textbf{-d}.
+
+\hypertarget{stopping-and-restarting-the-service-1}{%
+\subsection{Stopping and Restarting the
+Service}\label{stopping-and-restarting-the-service-1}}
+
+The server can be stopped by terminating its process:
+
+\begin{verbatim}
+$ pkill wendzelnntpd
+\end{verbatim}
+
+The server has a handler for the termination signal that allows to
+safely shutdown using \textbf{pkill} or \textbf{kill}.
+
+To restart the service, terminate and start the service.
+
+\hypertarget{automating-start-stop-and-restart-1}{%
+\subsubsection{Automating Start, Stop, and
+Restart}\label{automating-start-stop-and-restart-1}}
+
+The script \textbf{init.d\_script} in the directory
+\emph{scripts/startup} of the tarball can be used to start, restart, and
+stop WendzelNNTPd. It is a standard \emph{init.d} script for Linux
+operating systems that can usually be copied to \emph{/etc/init.d} (it
+must be executable).
+
+\begin{verbatim}
+$ cp scripts/startup/init.d_script /etc/init.d/wendzelnntpd
+$ chmod +x /etc/init.d/wendzelnntpd
+\end{verbatim}
+
+\textbf{Note:} Please note that some operating systems use different
+directories than \emph{/etc/init.d} or other startup script formats. In
+such cases, the script works nevertheless but should simply be installed
+to \emph{/usr/local/sbin} instead.
+
+To start, stop, and restart WendzelNNTPd, the following commands can be
+used afterwards:
+
+\begin{verbatim}
+$ /etc/init.d/wendzelnntpd start
+Starting WendzelNNTPd ... done.
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+
+$ /etc/init.d/wendzelnntpd restart
+Stopping WendzelNNTPd ... done.
+Starting WendzelNNTPd ... done.
+WendzelNNTPd: version 2.0.7 'Berlin'  - (Oct
+26 2015 14:10:20 #2544) is ready.
+
+$ /etc/init.d/wendzelnntpd stop
+Stopping WendzelNNTPd ... done.
+\end{verbatim}
+
+\hypertarget{administration-tool-wendzelnntpadm-1}{%
+\subsection{Administration Tool
+`wendzelnntpadm'}\label{administration-tool-wendzelnntpadm-1}}
+
+Use the command line tool \textbf{wendzelnntpadm} to configure users,
+roles and newsgroups of your WendzelNNTPd installation. To get an
+overview of supported commands, run ``wendzelnntpadm help'':
+
+\begin{verbatim}
+$ wendzelnntpadm help
+usage: wendzelnntpd <command> [parameters]
+*** Newsgroup Administration:
+ <listgroups>
+ <addgroup | modgroup> <newsgroup> <posting-allowed-flag (y/n)>
+ <delgroup> <newsgroup>
+*** User Administration:
+ <listusers>
+ <adduser> <username> [<password>]
+ <deluser> <username>
+*** ACL (Access Control List) Administration:
+ <listacl>
+ <addacluser | delacluser> <username> <newsgroup>
+ <addaclrole | delaclrole> <role>
+ <rolegroupconnect | rolegroupdisconnect> <role> <newsgroup>
+ <roleuserconnect | roleuserdisconnect> <role> <username>
+\end{verbatim}
+
+\hypertarget{creatinglistingdeleting-newsgroups-1}{%
+\subsection{Creating/Listing/Deleting
+Newsgroups}\label{creatinglistingdeleting-newsgroups-1}}
+
+You can either list, create or delete newsgroups using
+\textbf{wendzelnntpadm}.
+
+\hypertarget{listing-existing-newsgroups-1}{%
+\subsubsection{Listing existing
+newsgroups}\label{listing-existing-newsgroups-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm listgroups
+Newsgroup, Low-, High-Value, Posting-Flag
+-----------------------------------------
+alt.test 10 1 y
+mgmt.talk 1 1 y
+secret.project-x 20 1 y
+done.
+\end{verbatim}
+
+\hypertarget{creating-a-new-newsgroup-1}{%
+\subsubsection{Creating a new
+newsgroup}\label{creating-a-new-newsgroup-1}}
+
+To create a new newsgroup run the following command:
+
+\begin{verbatim}
+$ wendzelnntpadm addgroup my.cool.group y
+Newsgroup my.cool.group does not exist. Creating new group.
+done.
+\end{verbatim}
+
+You can also change the ``posting allowed'' flag of a newsgroup:
+
+\begin{verbatim}
+$ wendzelnntpadm modgroup my.cool.group y
+Newsgroup my.cool.group exists: okay.
+done.
+$ wendzelnntpadm modgroup my.cool.group n
+Newsgroup my.cool.group exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{deleting-a-newsgroup-1}{%
+\subsubsection{Deleting a newsgroup}\label{deleting-a-newsgroup-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm delgroup my.cool.group
+Newsgroup my.cool.group exists: okay.
+Clearing association class ... done
+Clearing ACL associations of newsgroup my.cool.group... done
+Clearing ACL role associations of newsgroup my.cool.group... done
+Deleting newsgroup my.cool.group itself ... done
+Cleanup: Deleting postings that do not belong to an existing newsgroup ... done
+done.
+\end{verbatim}
+
+\hypertarget{user-accounts-administration-1}{%
+\subsection{User Accounts
+Administration}\label{user-accounts-administration-1}}
+
+The easiest way to give only some people access to your server is to
+create user accounts (please make sure you activated authentication in
+your configuration file). You can add, delete and list all users.
+
+\hypertarget{listing-users-and-passwords-1}{%
+\subsubsection{Listing Users (and
+Passwords)}\label{listing-users-and-passwords-1}}
+
+This command always prints the (hashed) password of the users:
+
+\begin{verbatim}
+$ wendzelnntpadm listusers
+Username, Password
+------------------
+developer1, wegerhgrhtrthjtzj
+developer2, erghnrehhnht
+manager1, wegergergrhth
+manager2, thnthnrothnht
+swendzel, lalalegergreg
+swendzel2, 94j5z5jh5th
+swendzel3, lalalalala
+swendzel4, wegwegwegwegweg
+done.
+\end{verbatim}
+
+\hypertarget{creating-a-new-user-1}{%
+\subsubsection{Creating a new user}\label{creating-a-new-user-1}}
+
+You can either enter the password as additional parameter (useful for
+scripts that create users automatically) ...
+
+\begin{verbatim}
+$ wendzelnntpadm adduser UserName HisPassWord
+User UserName does currently not exist: okay.
+done.
+\end{verbatim}
+
+... or you can type it using the prompt (in this case the input is
+shadowed):
+
+\begin{verbatim}
+$ wendzelnntpadm adduser UserName2
+Enter new password for this user (max. 100 chars):
+User UserName2 does currently not exist: okay.
+done.
+\end{verbatim}
+
+\textbf{Please Note:} A password must include at least 8 characters and
+may not include more than 100 characters.
+
+\hypertarget{deleting-an-existing-user-1}{%
+\subsubsection{Deleting an existing
+user}\label{deleting-an-existing-user-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm deluser UserName2
+User UserName2 exists: okay.
+Clearing ACL associations of user UserName2... done
+Clearing ACL role associations of user UserName2... done
+Deleting user UserName2 from database ... done
+done.
+\end{verbatim}
+
+\hypertarget{access-control-list-administration-in-case-the-standard-nntp-authentication-is-not-enough-1}{%
+\subsection{Access Control List Administration (in case the standard
+NNTP authentication is not
+enough)}\label{access-control-list-administration-in-case-the-standard-nntp-authentication-is-not-enough-1}}
+
+Welcome to the advanced part of WendzelNNTPd. WendzelNNTPd includes a
+powerful role based access control system. You can either only use
+normal access control lists where you can configure which user will have
+access to which newsgroup. Or you can use the advanced role system: You
+can add users to roles (e.g., the user ``boss99'' to the role
+``management'') and give a role access to a group (e.g., role
+``management'' shall have access to ``discuss.management'').
+
+\textbf{Note:} Please note that you must activate the ACL feature in
+your configuration file to use it.
+
+\textbf{Note:} To see \emph{all} data related to the ACL subsystem of
+your WendzelNNTPd installation, simply use ``wendzelnntpadm listacl''.
+
+\hypertarget{invisible-newsgroups-1}{%
+\subsubsection{Invisible Newsgroups}\label{invisible-newsgroups-1}}
+
+WendzelNNTPd includes a feature called ``Invisible Newsgroups'' which
+means that a user without access to a newsgroup will neither see the
+newsgroup in the list of newsgroups, nor will he be able to post to such
+a newsgroup or will be able to read it.
+
+\hypertarget{simple-access-control-1}{%
+\subsubsection{Simple Access Control}\label{simple-access-control-1}}
+
+We start with the simple access control component where you can define
+which user will have access to which newsgroup.
+
+\hypertarget{giving-a-user-access-to-a-newsgroup-1}{%
+\paragraph{Giving a user access to a
+newsgroup}\label{giving-a-user-access-to-a-newsgroup-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm addacluser swendzel alt.test
+User swendzel exists: okay.
+Newsgroup alt.test exists: okay.
+done.
+$ wendzelnntpadm listacl
+List of roles in database:
+Roles
+-----
+
+Connections between users and roles:
+Role, User
+----------
+
+Username, Has access to group
+-----------------------------
+swendzel, alt.test
+
+Role, Has access to group
+-------------------------
+done.
+\end{verbatim}
+
+\hypertarget{removing-a-users-access-to-a-newsgroup-1}{%
+\paragraph{Removing a user's access to a
+newsgroup}\label{removing-a-users-access-to-a-newsgroup-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm delacluser swendzel alt.test
+User swendzel exists: okay.
+Newsgroup alt.test exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{adding-and-removing-acl-roles-1}{%
+\subsubsection{Adding and Removing ACL
+Roles}\label{adding-and-removing-acl-roles-1}}
+
+If you have many users, some of them should have access to the same
+newsgroup (e.g., the developers of a new system should have access to
+the development newsgroup of the system). With roles you do not have to
+give every user explicit access to such a group. Instead you add the
+users to a role and give the role access to the group. (One advantage is
+that you can easily give the complete role access to another group with
+only one command instead of adding each of its users to the list of
+people who have access to the new group).
+
+In the following examples, we give the users ``developer1'',
+``developer2'', and ``developer3'' access to the development role of
+``project-x'' and connect their role to the newsgroups
+``project-x.discussion'' and ``project-x.support''. To do so, we create
+the three users and the two newsgroups first:
+
+\begin{verbatim}
+$ wendzelnntpadm adduser developer1
+Enter new password for this user (max. 100 chars):
+User developer1 does currently not exist: okay.
+done.
+$ wendzelnntpadm adduser developer2
+Enter new password for this user (max. 100 chars):
+User developer2 does currently not exist: okay.
+done.
+$ wendzelnntpadm adduser developer3
+Enter new password for this user (max. 100 chars):
+User developer3 does currently not exist: okay.
+done.
+
+$ wendzelnntpadm addgroup project-x.discussion y
+Newsgroup project-x.discussion does not exist. Creating new group.
+done.
+$ wendzelnntpadm addgroup project-x.support y
+Newsgroup project-x.support does not exist. Creating new group.
+done.
+\end{verbatim}
+
+\hypertarget{creating-an-acl-role-1}{%
+\paragraph{Creating an ACL Role}\label{creating-an-acl-role-1}}
+
+Before you can add users to a role and before you can connect a role to
+a newsgroup, you have to create an ACL \emph{role} (you have to choose
+an ASCII name for it). In this example, the group is called
+``project-x''.
+
+\begin{verbatim}
+$ wendzelnntpadm addaclrole project-x
+Role project-x does not exists: okay.
+done.
+\end{verbatim}
+
+\hypertarget{deleting-an-acl-role-1}{%
+\paragraph{Deleting an ACL Role}\label{deleting-an-acl-role-1}}
+
+You can delete an ACL role by using ``delaclrole'' instead of
+``addaclrole'' like in the example above.
+
+\hypertarget{connecting-and-disconnecting-users-withfrom-roles-1}{%
+\subsubsection{Connecting and Disconnecting Users with/from
+Roles}\label{connecting-and-disconnecting-users-withfrom-roles-1}}
+
+To add (connect) or remove (disconnect) a user to/from a role, you need
+to use the admin tool too.
+
+\hypertarget{connecting-a-user-with-a-role-1}{%
+\paragraph{Connecting a User with a
+Role}\label{connecting-a-user-with-a-role-1}}
+
+The second parameter (``project-x'') is the role name and the third
+parameter (``developer1'') is the username. Here we add our three
+developer users from the example above to the group project-x:
+
+\begin{verbatim}
+$ wendzelnntpadm roleuserconnect project-x developer1
+Role project-x exists: okay.
+User developer1 exists: okay.
+Connecting role project-x with user developer1 ... done
+done.
+$ wendzelnntpadm roleuserconnect project-x developer2
+Role project-x exists: okay.
+User developer2 exists: okay.
+Connecting role project-x with user developer2 ... done
+done.
+$ wendzelnntpadm roleuserconnect project-x developer3
+Role project-x exists: okay.
+User developer3 exists: okay.
+Connecting role project-x with user developer3 ... done
+done.
+\end{verbatim}
+
+\hypertarget{disconnecting-a-user-from-a-role-1}{%
+\paragraph{Disconnecting a User from a
+Role}\label{disconnecting-a-user-from-a-role-1}}
+
+\begin{verbatim}
+$ wendzelnntpadm roleuserdisconnect project-x developer1
+Role project-x exists: okay.
+User developer1 exists: okay.
+Dis-Connecting role project-x from user developer1 ... done
+done.
+\end{verbatim}
+
+\hypertarget{connecting-and-disconnecting-roles-withfrom-newsgroups-1}{%
+\subsubsection{Connecting and Disconnecting Roles with/from
+Newsgroups}\label{connecting-and-disconnecting-roles-withfrom-newsgroups-1}}
+
+Even if a role is connected with a set of users, it is still useless
+until you connect the role with a newsgroup.
+
+\hypertarget{connecting-a-role-with-a-newsgroup-1}{%
+\paragraph{Connecting a Role with a
+Newsgroup}\label{connecting-a-role-with-a-newsgroup-1}}
+
+To connect a role with a newsgroup, we have to use the command line tool
+for a last time (the 2nd parameter is the role, and the 3rd parameter is
+the name of the newsgroup). Here we connect our ``project-x'' role to
+the two newsgroups ``project-x.discussion'' and ``project-x.support'':
+
+\begin{verbatim}
+$ wendzelnntpadm rolegroupconnect project-x project-x.discussion
+Role project-x exists: okay.
+Newsgroup project-x.discussion exists: okay.
+Connecting role project-x with newsgroup project-x.discussion ... done
+done.
+$ wendzelnntpadm rolegroupconnect project-x project-x.support
+Role project-x exists: okay.
+Newsgroup project-x.support exists: okay.
+Connecting role project-x with newsgroup project-x.support ... done
+done.
+\end{verbatim}
+
+\hypertarget{disconnecting-a-role-from-a-newsgroup-1}{%
+\paragraph{Disconnecting a Role From a
+Newsgroup}\label{disconnecting-a-role-from-a-newsgroup-1}}
+
+Disconnecting is done like in the example above but you have to use the
+command ``rolegroup\textbf{dis}connect'' instead of
+``rolegroupconnect''.
+
+\hypertarget{listing-your-whole-acl-configuration-again-1}{%
+\subsubsection{Listing Your Whole ACL Configuration
+Again}\label{listing-your-whole-acl-configuration-again-1}}
+
+Like mentioned before, you can use the command ``listacl'' to list your
+whole ACL configuration (except the list of users that will be listed by
+the command ``listusers'').
+
+\begin{verbatim}
+$ wendzelnntpadm listacl
+List of roles in database:
+Roles
+-----
+project-x
+
+Connections between users and roles:
+Role, User
+----------
+project-x, developer1
+project-x, developer2
+project-x, developer3
+
+Username, Has access to group
+-----------------------------
+swendzel, alt.test
+
+Role, Has access to group
+-------------------------
+project-x, project-x.discussion
+project-x, project-x.support
+done.
+\end{verbatim}
+
+\hypertarget{saving-time-1}{%
+\paragraph{Saving time}\label{saving-time-1}}
+
+As mentioned above, you can safe time by using roles. For instance, if
+you add a new developer to the system, and the developer should have
+access to the two groups ``project-x.discussion'' and
+``project-x.support'', you do not have to assign the user to both (or
+even more) groups by hand. Instead, you just add the user to the role
+``project-x'' that is already connected to both groups.
+
+If you want to give all developers access to the group
+``project-x.news'', you also do not have to connect every developer with
+the project. Instead, you just connect the role with the newsgroup, what
+is one command instead of \(n\) commands. Of course, this time-saving
+concept also works if you want to delete a user.
+
+\hypertarget{hardening-1}{%
+\subsection{Hardening}\label{hardening-1}}
+
+Besides the already mentioned authentication, ACL and RBAC features, the
+security of the server can be improved by putting WendzelNNTPd in a
+\emph{chroot} environment or letting it run under an unprivileged user
+account (the user then needs write access to
+\emph{/var/spool/news/wendzelnntpd} and read access to
+(\emph{/usr/local)/etc/wendzelnntpd.conf}). An unprivileged user under
+Unix-like systems is also not able to create a listen socket on the
+default NNTP port (119) since all ports up to 1023 are
+usually\footnote{Some *nix-like systems may have a different range of
+  privileged ports.} reserved. This means that the server should use a
+port \(\geq\)1024 if it is started by a non-root user.
+
+Please also note that WendzelNNTPd can be easily identified due to its
+welcoming `banner' (desired code `200' message of NNTP). Tools such as
+\texttt{nmap} provide rules to identify WendzelNNTPd and its version
+this way. Theoretically, this could be changed by a slight code
+modification (welcome message, HELP output and other components that
+make the server identifiable). However, I do not recommend this as it is
+just a form of `security by obscurity'.
+
+\hypertarget{upgrading-1}{%
+\section{Upgrading}\label{upgrading-1}}
+
+\protect\hypertarget{Ch:Upgrade}{}{}
+
+\hypertarget{upgrade-fom-version-2.1.y-to-2.2.x-1}{%
+\subsection{Upgrade fom version 2.1.y to
+2.2.x}\label{upgrade-fom-version-2.1.y-to-2.2.x-1}}
+
+Please stop WendzelNNTPd and check the \emph{wendzelnntpd.conf}. There
+is a new configuration style that breaks parts of the previous
+configuration style (especially due to the introduction of
+``connectors'').
+
+\hypertarget{upgrade-from-version-2.1.x-to-2.1.y-1}{%
+\subsection{Upgrade from version 2.1.x to
+2.1.y}\label{upgrade-from-version-2.1.x-to-2.1.y-1}}
+
+Same as upgrading from v.2.0.x to v.2.0.y, see Section
+\protect\hyperlink{20xto20y}{1.4}.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-2.0.x-to-2.1.y-1}{%
+\subsection{Upgrade from version 2.0.x to
+2.1.y}\label{upgrade-from-version-2.0.x-to-2.1.y-1}}
+
+Please follow the upgrade instructions for upgrading from 2.0.x to 2.0.y
+below. However, once you use cryptographic hashes in your
+\emph{wendzelnntpd.conf}, your previous passwords will not work anymore,
+i.e., you need to reset all passwords or deactivate the hashing feature.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-2.0.x-to-2.0.y-20xto20y-1}{%
+\subsection{Upgrade from version 2.0.x to 2.0.y
+\{\#20xto20y\}}\label{upgrade-from-version-2.0.x-to-2.0.y-20xto20y-1}}
+
+Stop WendzelNNTPd if it is currently running. Install WendzelNNTPd as
+described but run \textbf{make upgrade} instead of \textbf{make
+install}. Afterwards, start WendzelNNTPd again.
+
+~
+
+~
+
+\hypertarget{upgrade-from-version-1.4.x-to-2.0.x-1}{%
+\subsection{Upgrade from version 1.4.x to
+2.0.x}\label{upgrade-from-version-1.4.x-to-2.0.x-1}}
+
+\textbf{Acknowledgement:} I would like to thank Ann from Href.com for
+helping a lot with finding out how to upgrade from 1.4.x to 2.0.x!
+
+~
+
+An upgrade from version 1.4.x was not foreseen due to the limited
+available time I have for the development. However, here is a dirty
+hack:
+
+\hypertarget{preparation-step}{%
+\subparagraph*{Preparation Step:}\label{preparation-step}}
+\addcontentsline{toc}{subparagraph}{Preparation Step:}
+
+You \textbf{need to create a backup of your existing installation
+first}, at least everything from \textbf{/var/spool/news/wendzelnntpd}
+as you will need all these files later. \textbf{Perform the following
+steps on your own risk -- it is possible that they do not work on your
+system as only two WendzelNNTPd installations were tested!}
+
+\hypertarget{first-step}{%
+\subparagraph*{First Step:}\label{first-step}}
+\addcontentsline{toc}{subparagraph}{First Step:}
+
+Install Wendzelnntpd-2.x on a Linux system (Windows is not supported
+anymore). This requires some libraries and tools.
+
+Under \emph{Ubuntu} they all come as packages:
+
+\begin{verbatim}
+$ sudo apt-get install libmysqlclient-dev libsqlite3-dev flex bison sqlite3
+\end{verbatim}
+
+Under \emph{CentOS} they come as packages as well:
+
+\begin{verbatim}
+$ sudo yum install make gcc bison flex sqlite-devel
+\end{verbatim}
+
+\emph{Other} operating systems should provide the same or similar
+packages/ports.
+
+Run \textbf{MYSQL=NO ./configure}, followed by \textbf{make}, and
+\textbf{sudo make install}. This will compile, build and install
+WendzelNNTPd without MySQL support as you only rely on SQLite3 from
+v.1.4.x (and it would be significantly more difficult to bring the
+SQLite database content to a MySQL database).
+
+\hypertarget{second-step}{%
+\subparagraph*{Second Step:}\label{second-step}}
+\addcontentsline{toc}{subparagraph}{Second Step:}
+
+Please make sure WendzelNNTPd-2 is configured in a way that we can
+*hopefully* make it work with your own database file. Therefore, in the
+configuration file \textbf{/usr/local/etc/wendzelnntpd.conf} make sure
+that WendzelNNTPd uses sqlite3 instead of mysql:
+
+\begin{verbatim}
+database-engine sqlite3
+\end{verbatim}
+
+\hypertarget{third-step}{%
+\subparagraph*{Third Step:}\label{third-step}}
+\addcontentsline{toc}{subparagraph}{Third Step:}
+
+Now comes the tricky part. The install command should have created
+\textbf{/var/spool/news/wendzelnntpd/usenet.db}. However, it is an empty
+usenet database file in the new format. Now REPLACE that file with the
+file you use on your existing WendzelNNTPd installation, which uses the
+old 1.4.x format. Also copy all of your old \textbf{cdp*} files and the
+old \textbf{nextmsgid} file from your Windows system/from your backup
+directory to \textbf{/var/spool/news/wendzelnntpd/}.
+
+The following step is a very dirty hack but I hope it works for you. It
+is not 100\% perfect as important table columns are then still of the
+type `STRING' instead of the type `TEXT'!
+
+Load the sqlite3 tool with your replaced database file:
+
+\begin{verbatim}
+$ sudo sqlite3 /var/spool/news/wendzelnntpd/usenet.db
+\end{verbatim}
+
+This will open the new file in editing mode. We now add the tables which
+are not part of v.1.4.x to your existing database file. Therefore enter
+the following commands:
+
+\begin{verbatim}
+CREATE TABLE roles (role TEXT PRIMARY KEY);
+CREATE TABLE users2roles (username TEXT, role TEXT, PRIMARY KEY(username, role));
+CREATE TABLE acl_users (username TEXT, ng TEXT, PRIMARY KEY(username, ng));
+CREATE TABLE acl_roles (role TEXT, ng TEXT, PRIMARY KEY(role, ng));
+.quit
+\end{verbatim}
+
+\hypertarget{fix-postings}{%
+\subparagraph*{Fix Postings}\label{fix-postings}}
+\addcontentsline{toc}{subparagraph}{Fix Postings}
+
+You will probably see no post bodies right now if posts are requested by
+your client. Therefore, switch into
+\textbf{/var/spool/news/wendzelnntpd} and run (as superuser) this
+command, it will replace the broken trailings with corrected ones:
+
+\begin{verbatim}
+$ cd /var/spool/news/wendzelnntpd
+$ for filn in `/bin/ls cdp*`; do echo $filn; cat $filn | \
+sed 's/\.\r/.\r\n/' > new;  num=`wc -l new| \
+awk '{$minone=$1-1; print $minone}'` ; \
+head -n $num new > $filn; done
+$
+\end{verbatim}
+
+\hypertarget{last-step-checking-whether-it-works}{%
+\subparagraph*{Last Step (Checking whether it
+works!):}\label{last-step-checking-whether-it-works}}
+\addcontentsline{toc}{subparagraph}{Last Step (Checking whether it
+works!):}
+
+First check, whether the database file is accepted at all:
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listgroups
+\end{verbatim}
+
+It should list all your newsgroups
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listusers
+\end{verbatim}
+
+It should list all existing users. Accordingly
+
+\begin{verbatim}
+$ sudo wendzelnntpadm listacl
+\end{verbatim}
+
+should list all access control entries (which will be empty right now
+but if no error message appears, the related tables are now part of your
+database file!).
+
+~
+
+Now start WendzelNNTPd via \textbf{sudo wendzelnntpd} and try to connect
+with a NNTP client to your WendzelNNTPd and then try reading posts,
+sending new posts and replying to these posts.
+
+If this works, you can now run v2.x on 32bit and 64bit Linux :)
+Congrats, you made it and chances are you are the second user who did
+that. Let me know via e-mail if it worked for you.
+
+%\addcontentsline{toc}{chapter}{Index}
+%\printindex
+
+\end{document}

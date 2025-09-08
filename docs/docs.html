@@ -1,0 +1,87 @@
+<h1 id="installation">Installation</h1>
+<p>This chapter provides a guide on how to install WendzelNNTPd 2.x.</p>
+<h2 id="linuxnixbsd">Linux/*nix/BSD</h2>
+<p>To install WendzelNNTPd from source you need to download the provided
+archive file (e.g., <em>wendzelnntpd-2.0.0.tar.gz</em>) file.<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> Extract it and run
+<strong>./configure</strong>. Please note that configure indicates
+missing libraries and packages that you may first need to install using
+the package system of your operating system.</p>
+<pre><code>$ tar -xzf wendzelnntpd-2.0.0.tgz
+$ cd wendzelnntpd
+$ ./configure
+...</code></pre>
+<p><strong>Please Note:</strong> <em>If you wish to compile WITHOUT
+MySQL or WITHOUT SQlite support</em>, then run <strong>MYSQL=NO
+./configure</strong> or <strong>SQLITE=NO ./configure</strong>,
+respectively.</p>
+<p> </p>
+<p><strong>Please Note:</strong> <em>For FreeBSD/OpenBSD/NetBSD/*BSD:
+There is no MySQL support; you need to use SQLite (i.e., run
+<code>MYSQL=NO ./configure</code>). Run <code>configure</code> as well
+as <code>make</code> in the <code>bash</code> shell (under some BSDs you
+first need to install <code>bash</code>).</em></p>
+<p> </p>
+<p><strong>Please Note:</strong> <em>If you wish to compile WITHOUT TLS
+support</em>, then run <strong>TLS=NO ./configure</strong>.</p>
+<p> </p>
+<p>After <code>configure</code> has finished, run
+<strong>make</strong>:</p>
+<pre><code>$ make
+...</code></pre>
+<h5 class="unnumbered" id="generating-ssl-certifiates">Generating SSL
+certifiates</h5>
+<p>If you want to generate SSL certificates you can use the helper
+script:</p>
+<pre><code>$ sudo ./create_certificate \
+    --environment letsencrypt \
+    --email &lt;YOUR-EMAIL&gt; \\
+    --domain &lt;YOUR-DOMAIN&gt;</code></pre>
+<p>For the parameter <code>--environment</code>, “<em>local</em>” is
+also a valid value. In that case, the certificate is generated only for
+usage on localhost and is self-signed. After generating the certificate
+you have to adjust <em>wendzelnntpd.conf</em> (check Section <a
+href="#network-settings" data-reference-type="ref"
+data-reference="network-settings">[network-settings]</a>) to activate
+TLS (configuration option <em>enable-tls</em>)). The paths for
+certificate and server key can stay as they are.</p>
+<p> </p>
+<h5 class="unnumbered" id="installing-wendzelnntpd">Installing
+WendzelNNTPd</h5>
+<p>To install WendzelNNTPd on your system, you need superuser access.
+Run <strong>make install</strong> to install it to the default location
+<em>/usr/local/*</em>.</p>
+<pre><code>$ sudo make install</code></pre>
+<p><strong>Please Note (Upgrades):</strong> Run <strong>sudo make
+upgrade</strong> instead of <strong>sudo make install</strong> for an
+upgrade. Please cf. Section <a href="#Ch:Upgrade"
+data-reference-type="ref" data-reference="Ch:Upgrade">[Ch:Upgrade]</a>
+(Upgrading).</p>
+<p><strong>Please Note (MySQL):</strong> <em>If you plan to run
+MySQL</em>, then no database was set up during ’make install’. Please
+refer to Section <a href="#Ch:Config" data-reference-type="ref"
+data-reference="Ch:Config">[Ch:Config]</a> (Basic Configuration) to
+learn how to generate the MySQL database.</p>
+<h3 id="init-script-for-automatic-startup">Init Script for Automatic
+Startup</h3>
+<p>There is an init script in the directory scripts/startup. It uses the
+usual parameters like “start”, “stop” and “restart”.</p>
+<h2 id="unofficial-note-mac-os-x">Unofficial Note: Mac OS X</h2>
+<p>A user reported WendzelNNTPd-2.0.0 is installable under Mac OS X
+10.5.8. The only necessary change was to add the flag
+“<code>-arch x86_64</code>” to compile the code on a 64 bit system.
+However, I never tried to compile WendzelNNTPd on a Mac.</p>
+<h2 id="windows">Windows</h2>
+<p>Not supported.</p>
+<section class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>On some *nix-like operating systems
+you need to first run <strong>gzip -d wendzelnntpd-VERSION.tgz</strong>
+and then <strong>tar -xf wendzelnntpd-VERSION.tar</strong> instead of
+letting <code>tar</code> do the whole job.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
